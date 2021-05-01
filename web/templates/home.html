@@ -1,4 +1,17 @@
-{% extends "base.html" %}{% block content
+{% extends "base.html" %} {% block content
     %}
-    
+    <ul class="list-group list-group-flush" id="notes">
+      {% for note in user.notes %}
+      <li class="list-group-item">
+        {{ note.content }}
+      </li>
+      {% endfor %}
+    </ul>
+    <form method="POST">
+      <textarea rows=25 style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5"></textarea>
+      <br />
+      <div align="center">
+        <button type="submit" class="btn btn-primary me-5">Create pastebin</button>
+      </div>
+    </form>
     {% endblock %}

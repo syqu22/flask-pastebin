@@ -6,26 +6,25 @@ import json
 
 views = Blueprint("views", __name__)
 
-#@views.route("/notes", methods=["GET", "POST"])
-#@login_required
-#def notes():
-#    if request.method == "POST":
-#        note = request.form.get("note")
-#
-#        if len(note) < 1:
-#            flash("Note is too short!", category="error")
-#        else:
-#            new_note = Note(content=note, user_id=current_user.id)
-#            db.session.add(new_note)
-#            db.session.commit()
-#            flash("Note added!", category="success")
-#
-#
- #   return render_template("notes.html", user=current_user)
-
-@views.route("/")
+@views.route("/", methods=["GET", "POST"])
 def home():
+   if request.method == "POST":
+      pass
+      #note = request.form.get("note")
+
+      #if len(note) < 1:
+      #   flash("Note is too short!", category="error")
+      #else:
+      #   new_note = Note(content=note, user_id=current_user.id)
+      #   db.session.add(new_note)
+      #   db.session.commit()
+      #   flash("Note added!", category="success")
    return render_template("home.html", user=current_user)
+
+@views.route("/pastebins")
+@login_required
+def pastebins():
+   return render_template("pastebins.html", user=current_user)
 
 #@views.route("/delete-note", methods=["POST"])
 #@login_required
