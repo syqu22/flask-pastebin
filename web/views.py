@@ -26,25 +26,14 @@ def home():
          new_pastebin.link = PastebinUtil.base36_encode(new_pastebin.id)
          db.session.commit()
          flash("Pastebin added!", category="success")
+         return redirect(url_for("views.pastebins", link=new_pastebin.link))
    return render_template("home.html", user=current_user)
 
 @views.route("/<link>")
 def pastebins(link: str):
-   if Pastebin.query.filter_by(link=link).first():
-      return render_template("todo.html", user=current_user)
+   a= Pastebin.query.filter_by(link=link).first()
+   if a:
+      return render_template("pastebin.html", user=current_user, pastebin=a)
    else:
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
-
-#@views.route("/delete-note", methods=["POST"])
-#@login_required
-#def delete_note():
-#    note = json.loads(request.data)
-#    noteId = note["noteId"]
-#    note = Note.query.get(noteId)
-#
-#    if note:
-#        if note.user_id == current_user.id:
-#            db.session.delete(note)
-#            db.session.commit()
-#            return jsonify({})
