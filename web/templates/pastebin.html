@@ -1,7 +1,7 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Owned by user with id {{ pastebin.user_id }}</h2>
+<h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Created on {{ pastebin.date }}Owned by user with id {{ pastebin.user_id }}</h2>
 <textarea rows=25 style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
 
 {% endblock %}

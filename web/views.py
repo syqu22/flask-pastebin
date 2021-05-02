@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user
+from flask_login.utils import login_required
 from .models import Pastebin
 from .util.pastebin_util import PastebinUtil
 from . import db
@@ -36,3 +37,8 @@ def pastebins(link: str):
    else:
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
+
+@views.route("/user")
+@login_required
+def user():
+   return render_template("user.html", user=current_user)
