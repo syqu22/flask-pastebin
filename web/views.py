@@ -1,6 +1,5 @@
-from os import link
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
-from flask_login import login_required, current_user
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_login import current_user
 from .models import Pastebin
 from .util.pastebin_util import PastebinUtil
 from . import db
@@ -13,9 +12,9 @@ def home():
       pastebin = request.form.get("pastebin")
 
       if len(pastebin) < 1:
-         flash("Your pastebin have to be at least 1 letter long.", category="error")
+         flash("Your pastebin must be at least 1 character long.", category="error")
       elif len(pastebin) > 6000000:
-         flash("Your pastebin cannot exceed 6000000 letters limit.", category="error")
+         flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
       else:
          if current_user.is_anonymous:
             new_pastebin = Pastebin(content=pastebin)
@@ -31,9 +30,9 @@ def home():
 
 @views.route("/<link>")
 def pastebins(link: str):
-   a= Pastebin.query.filter_by(link=link).first()
-   if a:
-      return render_template("pastebin.html", user=current_user, pastebin=a)
+   pastebin = Pastebin.query.filter_by(link=link).first()
+   if pastebin:
+      return render_template("pastebin.html", user=current_user, pastebin=pastebin)
    else:
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))

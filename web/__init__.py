@@ -10,17 +10,15 @@ DB_NAME = "database.db"
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = secrets.token_hex(16)
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_NAME}"
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///db/{DB_NAME}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
     from .views import views
     from .auth import auth
-    from .errors import errors
 
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
-    app.register_blueprint(errors, url_prefix="/")
 
     from .models import User, Pastebin
 
@@ -37,5 +35,5 @@ def create_app():
     return app
 
 def create_database(app):
-    if not path.exists("web/" + DB_NAME):
+    if not path.exists("web/db/" + DB_NAME):
         db.create_all(app=app)

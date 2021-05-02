@@ -58,7 +58,7 @@ def check_input(username, email, password1, password2):
     elif len(password1) < 5:
         flash("Password must be at least 5 characters long.", category="error")
     elif len(password1) > 20:
-        flash("Password can not be longer than 20 characters.", category="error")
+        flash("Password cannot be longer than 20 characters.", category="error")
     elif password1 != password2:
         flash("Passwords are not the same.", category="error")
     else:
