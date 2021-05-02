@@ -1,6 +1,8 @@
+from os import link
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Pastebin
+from .util.pastebin_util import PastebinUtil
 from . import db
 
 views = Blueprint("views", __name__)
@@ -11,15 +13,17 @@ def home():
       pastebin = request.form.get("pastebin")
 
       if len(pastebin) < 1:
-         flash("Your pastebin have to be at least 1 word long.", category="error")
+         flash("Your pastebin have to be at least 1 letter long.", category="error")
       elif len(pastebin) > 6000000:
-         flash("Your pastebin cannot exceed 6000000 symbols limit.", category="error")
+         flash("Your pastebin cannot exceed 6000000 letters limit.", category="error")
       else:
          if current_user.is_anonymous:
             new_pastebin = Pastebin(content=pastebin)
          else:
-            new_pastebin = Pastebin(content=pastebin, user_id=current_user.id)
+            new_pastebin = Pastebin(content=pastebin, user_id=current_user.id)      
          db.session.add(new_pastebin)
+         db.session.commit()
+         new_pastebin.link = PastebinUtil.base36_encode(new_pastebin.id)
          db.session.commit()
          flash("Pastebin added!", category="success")
    return render_template("home.html", user=current_user)
