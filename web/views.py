@@ -9,16 +9,20 @@ views = Blueprint("views", __name__)
 @views.route("/", methods=["GET", "POST"])
 def home():
    if request.method == "POST":
-      pass
-      #note = request.form.get("note")
+      pastebin = request.form.get("pastebin")
 
-      #if len(note) < 1:
-      #   flash("Note is too short!", category="error")
-      #else:
-      #   new_note = Note(content=note, user_id=current_user.id)
-      #   db.session.add(new_note)
-      #   db.session.commit()
-      #   flash("Note added!", category="success")
+      if len(pastebin) < 1:
+         flash("Your pastebin have to be at least 1 word long.", category="error")
+      elif len(pastebin) > 6000000:
+         flash("Your pastebin cannot exceed 6000000 symbols limit.", category="error")
+      else:
+         if current_user.is_anonymous:
+            new_pastebin = Pastebin(content=pastebin)
+         else:
+            new_pastebin = Pastebin(content=pastebin, user_id=current_user.id)
+         db.session.add(new_pastebin)
+         db.session.commit()
+         flash("Pastebin added!", category="success")
    return render_template("home.html", user=current_user)
 
 @views.route("/pastebins")

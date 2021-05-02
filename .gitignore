@@ -1,9 +1,6 @@
 #Visual Studio Code
 .vscode
 
-# Databases
-.db
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
