@@ -1,0 +1,3 @@
+class PastebinUtil:
+    def generate_link():
+        ...

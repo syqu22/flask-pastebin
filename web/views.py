@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Pastebin
 from . import db
-import json
 
 views = Blueprint("views", __name__)
 
@@ -25,10 +24,13 @@ def home():
          flash("Pastebin added!", category="success")
    return render_template("home.html", user=current_user)
 
-@views.route("/pastebins")
-@login_required
-def pastebins():
-   return render_template("pastebins.html", user=current_user)
+@views.route("/<link>")
+def pastebins(link: str):
+   if Pastebin.query.filter_by(link=link).first():
+      return render_template("todo.html", user=current_user)
+   else:
+      flash("Can't find pastebin.", category="error")
+      return redirect(url_for("views.home"))
 
 #@views.route("/delete-note", methods=["POST"])
 #@login_required
