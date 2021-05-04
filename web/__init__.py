@@ -15,12 +15,12 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
-    from .views import views
-    from .auth import auth
+    from web.blueprints import views
+    from web.blueprints import auth
 
     #Register urls
-    app.register_blueprint(views, url_prefix="/")
-    app.register_blueprint(auth, url_prefix="/")
+    app.register_blueprint(views.views, url_prefix="/")
+    app.register_blueprint(auth.auth, url_prefix="/")
 
     from .models import User, Pastebin
 

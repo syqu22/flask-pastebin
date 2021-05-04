@@ -3,9 +3,9 @@ from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Pastebin
-from .util.pastebin_util import PastebinUtil
-from . import db
+from web.models import Pastebin
+from web.util.pastebin_util import PastebinUtil
+from web import db
 
 views = Blueprint("views", __name__)
 
