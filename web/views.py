@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 from .models import Pastebin
 from .util.pastebin_util import PastebinUtil
 from . import db
@@ -24,7 +25,7 @@ def home():
       new_pastebin.link = PastebinUtil.base36_encode(new_pastebin.id)
       response = make_response(redirect(url_for("views.pastebins", link=new_pastebin.link)))
       if private == "True":
-         new_pastebin.password = password
+         new_pastebin.password = generate_password_hash(password, method="sha256")
          response.set_cookie(new_pastebin.link, new_pastebin.password)   
       db.session.commit()
 
@@ -42,6 +43,7 @@ def pastebins(link: str):
          if pastebin.password == None or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin)
          else:
+            print(1)
             return render_template("pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password)
       else:
          flash("Can't find pastebin.", category="error")
@@ -52,7 +54,7 @@ def pastebins(link: str):
       password = request.form.get("password")
       response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin))
 
-      if password == pastebin.password:
+      if check_password_hash(pastebin.password, password):
          response.set_cookie(link, pastebin.password)
          return response
       else:
