@@ -1,15 +1,17 @@
 {% extends "base.html" %} 
 
 {% block content %}
-{% if pastebin.password %}
-<h2>This pastebin is private, please enter password</h2>
-<div class="form-group">
-    <label for="password">Password</label>
-    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" />
-</div>
-<div align="center">
-    <button type="submit" class="btn btn-primary mt-2">Enter</button>
-</div>
+{% if password %}
+<form method="POST">
+    <h2>This pastebin is private, please enter password</h2>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" />
+    </div>
+    <div align="center">
+        <button type="submit" class="btn btn-primary mt-2">Enter</button>
+    </div>
+</form>
 {% else %}
 <h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Created on {{ pastebin.date }}Owned by user with id {{ pastebin.user_id }}</h2>
 <textarea rows=25 style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
