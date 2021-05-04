@@ -17,16 +17,20 @@ def home():
       private = request.form.get("private")
       password = request.form.get("password")
 
+      #Validate if pastebin is correct
       if check_pastebin(title, pastebin):
          new_pastebin = Pastebin(title=title, content=pastebin, user_id=None if current_user.is_anonymous else current_user.id)  
 
+      #Add pastebin to database
       db.session.add(new_pastebin)
       db.session.commit()
       new_pastebin.link = PastebinUtil.base36_encode(new_pastebin.id)
       response = make_response(redirect(url_for("views.pastebins", link=new_pastebin.link)))
       if private == "True":
          new_pastebin.password = generate_password_hash(password, method="sha256")
+         #Set cookie using format k = pastebin link, v = hashed password
          response.set_cookie(new_pastebin.link, new_pastebin.password)   
+      #Update the same pastebin with new link based on ID and password
       db.session.commit()
 
       flash("Pastebin added!", category="success")
@@ -40,10 +44,11 @@ def pastebins(link: str):
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
       if pastebin:
+         #Check if pastebin has password or if passwords are correct
          if pastebin.password == None or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin)
          else:
-            print(1)
+            #If there is no cookie with correct password return template with additional parameter password
             return render_template("pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password)
       else:
          flash("Can't find pastebin.", category="error")
@@ -54,6 +59,7 @@ def pastebins(link: str):
       password = request.form.get("password")
       response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin))
 
+      #If password is correct save it as a cookie for later use
       if check_password_hash(pastebin.password, password):
          response.set_cookie(link, pastebin.password)
          return response

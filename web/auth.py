@@ -14,6 +14,7 @@ def login():
 
         user = User.query.filter_by(username=username).first()
         if user:
+            #If user with given username exists and passwords are correct Log him In
             if check_password_hash(user.password, password):
                 flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
@@ -33,6 +34,7 @@ def sign_up():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
+        #If user is valid add it to database
         if check_user(username, email, password1, password2):
             new_user = User(username=username, email=email, password=generate_password_hash(password1, method="sha256"))
             db.session.add(new_user)

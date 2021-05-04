@@ -3,13 +3,12 @@
 {% block content %}
 {% for pastebin in user.pastebins %}
       <li class="list-group-item">
-        <h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Owned by user with id {{ pastebin.user_id }}</h2>
+        <h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Created on {{ pastebin.date }}Owned by user with id {{ pastebin.user_id }}</h2>
         <textarea rows=10 style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
       </li>
       {% endfor %}
     </ul>
     <form method="POST">
-      <textarea name="note" id="note" class="form-control"></textarea>
       <br />
       <div align="center">
         <button type="submit" class="btn btn-primary">Delete</button>
