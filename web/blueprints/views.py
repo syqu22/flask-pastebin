@@ -24,7 +24,7 @@ def home():
       db.session.add(new_pastebin)
       db.session.commit()
       new_pastebin.link = encode_link(new_pastebin.id)
-      response = make_response(redirect(url_for("views.pastebins", link=new_pastebin.link)))
+      response = make_response(redirect(url_for("views.pastebin", link=new_pastebin.link)))
       if private == "True":
          new_pastebin.password = generate_password_hash(password, method="sha256")
          #Set cookie using format k = pastebin link, v = hashed password
@@ -38,7 +38,7 @@ def home():
    return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
 @views.route("/<link>", methods=["GET", "POST"])
-def pastebins(link: str):
+def pastebin(link: str):
    if request.method == "GET":
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
@@ -64,9 +64,21 @@ def pastebins(link: str):
          return response
       else:
          flash("Password is incorrect!", category="error")
-         return redirect(url_for("views.pastebins", link=link))
+         return redirect(url_for("views.pastebin", link=link))
 
-
+#Additional route just for raw format, same as normal pastebin
+@views.route("/raw/<link>")
+def raw_pastebin(link: str):
+   pastebin = Pastebin.query.filter_by(link=link).first()
+   password_cookie = request.cookies.get(link)
+   if pastebin:
+      if pastebin.password == None or password_cookie == pastebin.password:
+         return render_template("raw_pastebin.html", user=current_user, pastebin=pastebin)
+      else:
+         return render_template("raw_pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password)
+   else:
+      flash("Can't find pastebin.", category="error")
+      return redirect(url_for("views.home"))
 
 @views.route("/user")
 @login_required
