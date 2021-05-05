@@ -36,7 +36,7 @@ def home():
       flash("Pastebin added!", category="success")
       return response
          
-   return render_template("home.html", user=current_user)
+   return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
 @views.route("/<link>", methods=["GET", "POST"])
 def pastebins(link: str):
@@ -85,3 +85,9 @@ def check_pastebin(title: str, pastebin: str):
       flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
    else:
       return True
+
+#Get last 10 pastebins that don't have password
+def get_public_pastebins():
+   pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
+
+   return pastebins

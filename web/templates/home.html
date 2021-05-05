@@ -1,6 +1,8 @@
 {% extends "base.html" %} 
 
 {% block content%}
+<div class="row">
+  <div class="col-9">
     <form method="POST">
       <div class="form-group mt-5">
         <label for="title">Title</label>
@@ -15,5 +17,21 @@
       <div align="center">
         <button type="submit" class="btn btn-primary mt-2">Create pastebin</button>
       </div>
-    </form>
-    {% endblock %}
+    </form> 
+  </div>
+  <div class="col mt-4">
+    <label for="list-group" class="lead">Last 10 pastebins:</p>
+    <div class="list-group">
+   {% for pastebin in public_pastebins %}
+   <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1"></h5>
+      <small>{{ pastebin.date.replace(microsecond=0) }}</small>
+    </div>
+    <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p> 
+  </a>
+   {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}
