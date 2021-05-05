@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 
 class Pastebin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(150))
+    title = db.Column(db.String(150), default="Untitled")
     content = db.Column(db.String(6000000))
     link = db.Column(db.String(150), unique=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())

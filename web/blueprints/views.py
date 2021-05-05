@@ -18,7 +18,7 @@ def home():
       password = request.form.get("password")
 
       if is_pastebin_valid(title, pastebin):
-         new_pastebin = Pastebin(title=title, content=pastebin, user_id=current_user.get_id())  
+         new_pastebin = Pastebin(title=title if title != "" else None, content=pastebin, user_id=current_user.get_id())  
          db.session.add(new_pastebin)
          db.session.commit()
          new_pastebin.link = encode_link(new_pastebin.id)
@@ -135,9 +135,7 @@ def delete_pastebin(link: str):
 
 #Validate pastebin
 def is_pastebin_valid(title: str, pastebin: str):
-   if len(title) < 3:
-      flash("Title must be at least 3 characters long.", category="error")
-   elif len(title) > 150:
+   if len(title) > 150:
       flash("Title cannot exceed 150 characters limit.", category="error")
    elif len(pastebin) < 1:
       flash("Your pastebin must be at least 1 character long.", category="error")
