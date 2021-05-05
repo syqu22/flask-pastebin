@@ -1,15 +1,14 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask.helpers import make_response, send_file
-from flask.wrappers import Response
+from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from web.models import Pastebin
 from web import db
-from io import StringIO
 
 views = Blueprint("views", __name__)
 
+#Create pastebin
 @views.route("/", methods=["GET", "POST"])
 def home():
    if request.method == "POST":
@@ -18,10 +17,8 @@ def home():
       private = request.form.get("private")
       password = request.form.get("password")
 
-      #Validate if pastebin is correct
       if check_pastebin(title, pastebin):
-         new_pastebin = Pastebin(title=title, content=pastebin, user_id=None if current_user.is_anonymous else current_user.id)  
-         #Add pastebin to database
+         new_pastebin = Pastebin(title=title, content=pastebin, user_id=current_user.get_id())  
          db.session.add(new_pastebin)
          db.session.commit()
          new_pastebin.link = encode_link(new_pastebin.id)
@@ -29,28 +26,31 @@ def home():
          if private == "True":
             new_pastebin.password = generate_password_hash(password, method="sha256")
             #Set cookie using format k = pastebin link, v = hashed password
-            response.set_cookie(new_pastebin.link, new_pastebin.password)   
-            #Update the same pastebin with new link based on ID and password
+            response.set_cookie(new_pastebin.link, new_pastebin.password)  
+
+         #Update the same pastebin with new link based on ID and password
          db.session.commit()
 
          flash("Pastebin added!", category="success")
          return response
-      
-         
+          
    return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
+#View pastebin
 @views.route("/<link>", methods=["GET", "POST"])
 def pastebin(link: str):
    if request.method == "GET":
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
       if pastebin:
-         #Check if pastebin has password or if passwords are correct
          if pastebin.password == None or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin)
          else:
-            #If there is no cookie with correct password return template with additional parameter password
-            return render_template("pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password)
+            if pastebin.user_id == current_user.get_id():
+               return render_template("pastebin.html", user=current_user, pastebin=pastebin)
+            else:
+               flash("This pastebin is private.", category="error")
+               return redirect(url_for("views.pastebin", link=link))
       else:
          flash("Can't find pastebin.", category="error")
          return redirect(url_for("views.home"))
@@ -68,7 +68,7 @@ def pastebin(link: str):
          flash("Password is incorrect!", category="error")
          return redirect(url_for("views.pastebin", link=link))
 
-#Additional route just for raw format, same as normal pastebin
+#View raw pastebin
 @views.route("/raw/<link>")
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
@@ -89,6 +89,7 @@ def raw_pastebin(link: str):
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
 
+#Download pastebin
 @views.route("/download/<link>")
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
@@ -110,11 +111,13 @@ def download_pastebin(link: str):
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
 
+#View user personal pastebins
 @views.route("/user")
 @login_required
 def user():
    return render_template("user.html", user=current_user)
 
+#Validate pastebin
 def check_pastebin(title: str, pastebin: str):
    if len(title) < 3:
       flash("Title must be at least 3 characters long.", category="error")
@@ -127,7 +130,7 @@ def check_pastebin(title: str, pastebin: str):
    else:
       return True
 
-#Encode link using base36 encoding
+#Encode link using base36
 def encode_link(link):
       assert link >= 0, 'Positive integer is required'
       if link == 0:
@@ -138,7 +141,7 @@ def encode_link(link):
          base36.append('0123456789abcdefghijklmnopqrstuvwxyz'[i])
       return ''.join(reversed(base36))
 
-#Get last 10 pastebins that don't have password
+#Get last 10 pastebins that are not private
 def get_public_pastebins():
    pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
 

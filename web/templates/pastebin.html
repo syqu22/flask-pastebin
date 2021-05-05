@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if password and user.id != pastebin.user_id %}
+{% if password %}
 <form method="POST">
     <h2>This pastebin is private, please enter password</h2>
     <div class="form-group">

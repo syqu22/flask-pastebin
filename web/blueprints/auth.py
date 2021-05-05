@@ -6,6 +6,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 auth = Blueprint("auth", __name__)
 
+#Login view
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -26,6 +27,7 @@ def login():
     
     return render_template("login.html", user=current_user)
 
+#Sign up view
 @auth.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
@@ -46,12 +48,14 @@ def sign_up():
 
     return render_template("sign_up.html", user=current_user)
 
+#Log out view
 @auth.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("auth.login"))
 
+#Validate user
 def check_user(username: str, email: str, password1: str, password2: str):
     if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
         flash("User already exists.", category="error")
