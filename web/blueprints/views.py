@@ -19,21 +19,21 @@ def home():
       #Validate if pastebin is correct
       if check_pastebin(title, pastebin):
          new_pastebin = Pastebin(title=title, content=pastebin, user_id=None if current_user.is_anonymous else current_user.id)  
+         #Add pastebin to database
+         db.session.add(new_pastebin)
+         db.session.commit()
+         new_pastebin.link = encode_link(new_pastebin.id)
+         response = make_response(redirect(url_for("views.pastebin", link=new_pastebin.link)))
+         if private == "True":
+            new_pastebin.password = generate_password_hash(password, method="sha256")
+            #Set cookie using format k = pastebin link, v = hashed password
+            response.set_cookie(new_pastebin.link, new_pastebin.password)   
+            #Update the same pastebin with new link based on ID and password
+         db.session.commit()
 
-      #Add pastebin to database
-      db.session.add(new_pastebin)
-      db.session.commit()
-      new_pastebin.link = encode_link(new_pastebin.id)
-      response = make_response(redirect(url_for("views.pastebin", link=new_pastebin.link)))
-      if private == "True":
-         new_pastebin.password = generate_password_hash(password, method="sha256")
-         #Set cookie using format k = pastebin link, v = hashed password
-         response.set_cookie(new_pastebin.link, new_pastebin.password)   
-      #Update the same pastebin with new link based on ID and password
-      db.session.commit()
-
-      flash("Pastebin added!", category="success")
-      return response
+         flash("Pastebin added!", category="success")
+         return response
+      
          
    return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
