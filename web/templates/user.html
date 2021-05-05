@@ -2,16 +2,19 @@
 
 {% block content %}
 {% for pastebin in user.pastebins %}
+    <ul>
       <li class="list-group-item">
         <h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Created on {{ pastebin.date }}Owned by user with id {{ pastebin.user_id }}</h2>
-        <textarea rows=10 style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
+        <textarea rows="10" style="height:100%" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
+        <form method="DELETE">
+          <br />
+          <div align="center">
+            <a href="/delete/{{ pastebin.link }}"><button class="btn btn-primary">Delete</button></a>
+          </div>
+        </form>
       </li>
-      {% endfor %}
     </ul>
-    <form method="POST">
-      <br />
-      <div align="center">
-        <button type="submit" class="btn btn-primary">Delete</button>
-      </div>
-    </form>
+      {% endfor %}
+
+    
 {% endblock %}

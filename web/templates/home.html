@@ -9,7 +9,7 @@
         <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" />
       </div>
       <label for="pastebin" class="mt-3">Paste</label>
-      <textarea rows=25 style="height:100%" name="pastebin" id="pastebin" class="form-control" placeholder="Enter text"></textarea>
+      <textarea rows="25" style="height:100%" name="pastebin" id="pastebin" class="form-control" placeholder="Enter text"></textarea>
       <br />
       <label for="private">Private</label>
       <input class="form-check-input" type="checkbox" id="private" name="private" value="True">
@@ -20,7 +20,7 @@
     </form> 
   </div>
   <div class="col mt-4">
-    <label for="list-group" class="lead">Last public pastebins:</p>
+    <label for="list-group" class="lead">Last public pastebins:</label>
     <div class="list-group">
    {% for pastebin in public_pastebins %}
    <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">

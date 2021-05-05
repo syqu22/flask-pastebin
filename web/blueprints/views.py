@@ -41,6 +41,7 @@ def pastebin(link: str):
    if request.method == "GET":
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
+
       if pastebin:
          if pastebin.password == None or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin)
@@ -49,8 +50,9 @@ def pastebin(link: str):
                return render_template("pastebin.html", user=current_user, pastebin=pastebin)
             else:
                flash("This pastebin is private.", category="error")
-               return redirect(url_for("views.pastebin", link=link))
+               return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password)
       else:
+         print("6")
          flash("Can't find pastebin.", category="error")
          return redirect(url_for("views.home"))
    
@@ -72,6 +74,7 @@ def pastebin(link: str):
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
+
    if pastebin:   
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
@@ -93,6 +96,7 @@ def raw_pastebin(link: str):
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
+
    if pastebin:
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
@@ -106,6 +110,24 @@ def download_pastebin(link: str):
          else:
             flash("This pastebin is private.", category="error")
             return redirect(url_for("views.pastebin", link=link))
+   else:
+      flash("Can't find pastebin.", category="error")
+      return redirect(url_for("views.home"))
+
+#Delete pastebin (Only user can remove his own pastebin)
+@views.route("/delete/<link>")
+def delete_pastebin(link: str):
+   pastebin = Pastebin.query.filter_by(link=link).first()
+
+   if pastebin:
+      if pastebin.user_id != None and pastebin.user_id == current_user.get_id():
+         db.session.delete(pastebin)
+         db.session.commit()
+         flash("Sucessfully removed pastebin.", category="success")
+         return redirect(url_for("views.home"))
+      else:
+         flash("You don't have permission to do that.", category="error")
+         return redirect(url_for("views.home"))
    else:
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
