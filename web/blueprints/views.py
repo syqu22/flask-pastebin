@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask.helpers import make_response
+from flask.helpers import make_response, send_file
+from flask.wrappers import Response
 from flask_login import current_user
 from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from web.models import Pastebin
 from web import db
+from io import StringIO
 
 views = Blueprint("views", __name__)
 
@@ -71,11 +73,39 @@ def pastebin(link: str):
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   if pastebin:
+   if pastebin:   
+      response = make_response(pastebin.content)
+      response.headers.add("Content-Type", "text/plain")
+
       if pastebin.password == None or password_cookie == pastebin.password:
-         return render_template("raw_pastebin.html", user=current_user, pastebin=pastebin)
+         return response
       else:
-         return render_template("raw_pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password)
+         if pastebin.user_id == current_user.get_id():
+            return response
+         else:
+            flash("This pastebin is private.", category="error")
+            return redirect(url_for("views.pastebin", link=link))
+   else:
+      flash("Can't find pastebin.", category="error")
+      return redirect(url_for("views.home"))
+
+@views.route("/download/<link>")
+def download_pastebin(link: str):
+   pastebin = Pastebin.query.filter_by(link=link).first()
+   password_cookie = request.cookies.get(link)
+   if pastebin:
+      response = make_response(pastebin.content)
+      response.headers.add("Content-Type", "text/plain")
+      response.headers.add("Content-Disposition", "attachment", filename=link+".txt")
+
+      if pastebin.password == None or password_cookie == pastebin.password:
+         return response
+      else:
+         if pastebin.user_id == current_user.get_id():
+            return response
+         else:
+            flash("This pastebin is private.", category="error")
+            return redirect(url_for("views.pastebin", link=link))
    else:
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
