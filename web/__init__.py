@@ -17,10 +17,12 @@ def create_app():
 
     from web.blueprints import views
     from web.blueprints import auth
+    from web.blueprints import user_view
 
     #Register urls
     app.register_blueprint(views.views, url_prefix="/")
     app.register_blueprint(auth.auth, url_prefix="/")
+    app.register_blueprint(user_view.user_view, url_prefix="/")
 
     from .models import User, Pastebin
 

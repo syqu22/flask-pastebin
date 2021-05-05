@@ -1,3 +1,7 @@
 textarea {
     resize: none;
 }
+
+.navbar {
+    background-color: #c1c5c9;
+}

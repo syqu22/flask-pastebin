@@ -37,7 +37,7 @@ def sign_up():
         password2 = request.form.get("password2")
 
         #If user is valid add it to database
-        if check_user(username, email, password1, password2):
+        if is_user_valid(username, email, password1, password2):
             new_user = User(username=username, email=email, password=generate_password_hash(password1, method="sha256"))
             db.session.add(new_user)
             db.session.commit()
@@ -56,7 +56,7 @@ def logout():
     return redirect(url_for("auth.login"))
 
 #Validate user
-def check_user(username: str, email: str, password1: str, password2: str):
+def is_user_valid(username: str, email: str, password1: str, password2: str):
     if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
         flash("User already exists.", category="error")
     elif len(email) < 4:

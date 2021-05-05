@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.helpers import make_response
 from flask_login import current_user
-from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from web.models import Pastebin
 from web import db
@@ -17,7 +16,7 @@ def home():
       private = request.form.get("private")
       password = request.form.get("password")
 
-      if check_pastebin(title, pastebin):
+      if is_pastebin_valid(title, pastebin):
          new_pastebin = Pastebin(title=title, content=pastebin, user_id=current_user.get_id())  
          db.session.add(new_pastebin)
          db.session.commit()
@@ -111,14 +110,8 @@ def download_pastebin(link: str):
       flash("Can't find pastebin.", category="error")
       return redirect(url_for("views.home"))
 
-#View user personal pastebins
-@views.route("/user")
-@login_required
-def user():
-   return render_template("user.html", user=current_user)
-
 #Validate pastebin
-def check_pastebin(title: str, pastebin: str):
+def is_pastebin_valid(title: str, pastebin: str):
    if len(title) < 3:
       flash("Title must be at least 3 characters long.", category="error")
    elif len(title) > 150:

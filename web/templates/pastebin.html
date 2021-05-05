@@ -14,7 +14,7 @@
     </div>
 </form>
 {% else %}
-<h1 class="display-5">Name: {{ pastebin.title }}</h1>
+<h1 class="display-5 text-break">Name: {{ pastebin.title }}</h1>
 <small>Created on: {{ pastebin.date }}</small>
 <textarea rows=25 style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
 <br>
