@@ -125,7 +125,7 @@ def delete_pastebin(link: str):
          db.session.delete(pastebin)
          db.session.commit()
          flash("Sucessfully removed pastebin.", category="success")
-         return redirect(url_for("views.home"))
+         return redirect(url_for("user_view.user"))
       else:
          flash("You don't have permission to do that.", category="error")
          return redirect(url_for("views.home"))
