@@ -4,7 +4,6 @@ from flask_login import current_user
 from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from web.models import Pastebin
-from web.util.pastebin_util import PastebinUtil
 from web import db
 
 views = Blueprint("views", __name__)
@@ -24,7 +23,7 @@ def home():
       #Add pastebin to database
       db.session.add(new_pastebin)
       db.session.commit()
-      new_pastebin.link = PastebinUtil.base36_encode(new_pastebin.id)
+      new_pastebin.link = encode_link(new_pastebin.id)
       response = make_response(redirect(url_for("views.pastebins", link=new_pastebin.link)))
       if private == "True":
          new_pastebin.password = generate_password_hash(password, method="sha256")
@@ -85,6 +84,17 @@ def check_pastebin(title: str, pastebin: str):
       flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
    else:
       return True
+
+#Encode link using base36 encoding
+def encode_link(link):
+      assert link >= 0, 'Positive integer is required'
+      if link == 0:
+            return '0'
+      base36 = []
+      while link != 0:
+         link, i = divmod(link, 36)
+         base36.append('0123456789abcdefghijklmnopqrstuvwxyz'[i])
+      return ''.join(reversed(base36))
 
 #Get last 10 pastebins that don't have password
 def get_public_pastebins():
