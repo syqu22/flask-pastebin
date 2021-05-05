@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.helpers import make_response
 from flask_login import current_user
+from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from web.models import Pastebin
 from web import db
@@ -43,16 +44,15 @@ def pastebin(link: str):
       password_cookie = request.cookies.get(link)
 
       if pastebin:
-         if pastebin.password == None or password_cookie == pastebin.password:
+         if not pastebin.password or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin)
          else:
-            if pastebin.user_id == current_user.get_id():
+            if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
                return render_template("pastebin.html", user=current_user, pastebin=pastebin)
             else:
                flash("This pastebin is private.", category="error")
                return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password)
       else:
-         print("6")
          flash("Can't find pastebin.", category="error")
          return redirect(url_for("views.home"))
    
@@ -79,10 +79,10 @@ def raw_pastebin(link: str):
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
 
-      if pastebin.password == None or password_cookie == pastebin.password:
+      if not pastebin.password or password_cookie == pastebin.password:
          return response
       else:
-         if pastebin.user_id == current_user.get_id():
+         if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
             return response
          else:
             flash("This pastebin is private.", category="error")
@@ -102,10 +102,10 @@ def download_pastebin(link: str):
       response.headers.add("Content-Type", "text/plain")
       response.headers.add("Content-Disposition", "attachment", filename=link+".txt")
 
-      if pastebin.password == None or password_cookie == pastebin.password:
+      if not pastebin.password or password_cookie == pastebin.password:
          return response
       else:
-         if pastebin.user_id == current_user.get_id():
+         if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
             return response
          else:
             flash("This pastebin is private.", category="error")
@@ -115,12 +115,13 @@ def download_pastebin(link: str):
       return redirect(url_for("views.home"))
 
 #Delete pastebin (Only user can remove his own pastebin)
+@login_required
 @views.route("/delete/<link>")
 def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
 
    if pastebin:
-      if pastebin.user_id != None and pastebin.user_id == current_user.get_id():
+      if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
          db.session.delete(pastebin)
          db.session.commit()
          flash("Sucessfully removed pastebin.", category="success")
