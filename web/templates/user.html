@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% for pastebin in user.pastebins %}
-<ul>
-  <li class="list-group-item">
-    <h2>Pastebin with id: {{ pastebin.id }} and link {{ pastebin.link }}. Created on {{ pastebin.date }}Owned by user
-      with id {{ pastebin.user_id }}</h2>
-    <textarea rows="10" style="height:100%" class="form-control mt-5" readonly>{{ pastebin.content }}</textarea>
-    <br />
-    <div align="center">
-      <a href="/delete/{{ pastebin.link }}"><button class="btn btn-primary">Delete</button></a>
-    </div>
-  </li>
-</ul>
-{% endfor %}
+<div class="row row-cols-4">
+  {% for pastebin in user.pastebins %}
+  <div class="col p-3">
+    <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-between">
+        <small> a</small>
+      </div>
+      <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>
+    </a>
+    <a href="/delete/{{ pastebin.link }}"><button class="btn btn-danger">Delete</button></a>
+  </div>
+  {% endfor %}
+</div>
 
+{% if not pastebin %}
+<h1 class="display-2 text-break">You don't have any saved pastebins</h1>
+{% endif %}
 
 {% endblock %}

@@ -16,12 +16,15 @@
 {% else %}
 <h1 class="display-5 text-break">Name: {{ pastebin.title }}</h1>
 <small>Created on: {{ pastebin.date }}</small>
-<textarea rows="25" style="height:100%" name="pastebin" id="pastebin" class="form-control mt-5"
+<textarea rows="25" style="height:100%" name="pastebin" id="pastebin" class="form-control"
     readonly>{{ pastebin.content }}</textarea>
 <br>
 <button id="copy-all" class="btn btn-primary">Copy all</button>
 <a href="/raw/{{ pastebin.link }}"><button id="raw" class="btn btn-primary">Raw</button></a>
 <a href="/download/{{ pastebin.link }}"><button id="download" class="btn btn-primary">Download</button></a>
+{% if user.id == pastebin.user_id %}
+<a href="/delete/{{ pastebin.link }}"><button class="btn btn-danger">Delete</button></a>
+{% endif %}
 <script type="text/javascript" src="{{ url_for('static',filename='js/copy_all.js') }}"></script>
 {% endif %}
 {% endblock %}
