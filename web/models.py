@@ -8,6 +8,7 @@ class Pastebin(db.Model):
     content = db.Column(db.String(6000000))
     link = db.Column(db.String(150), unique=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+    expire_date = db.Column(db.DateTime(timezone=True))
     password = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 

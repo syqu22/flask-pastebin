@@ -1,3 +1,5 @@
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.helpers import make_response
 from flask_login import current_user
@@ -16,6 +18,8 @@ def home():
       pastebin = request.form.get("pastebin")
       private = request.form.get("private")
       password = request.form.get("password")
+      expire = request.form.get("expire")
+      expiration_date = request.form.get("expire_select")
 
       if is_pastebin_valid(title, pastebin):
          new_pastebin = Pastebin(title=title if title != "" else None, content=pastebin, user_id=current_user.get_id())  
@@ -31,8 +35,17 @@ def home():
             else:
                flash("Please input password else uncheck Private.", category="error")
                return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
+         if expire == "True" and expiration_date != "never":
+            if expiration_date == "day":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(days=+1)
+            elif expiration_date == "week":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(weeks=+1)
+            elif expiration_date == "month":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(months=+1)
+            elif expiration_date == "year":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(years=+1)
 
-         #Update the same pastebin with new link based on ID and password
+         #Update the same pastebin with new link based on ID and optionally password and/or expiration date
          db.session.commit()
 
          flash("Pastebin added!", category="success")
@@ -49,13 +62,13 @@ def pastebin(link: str):
 
       if pastebin:
          if not pastebin.password or password_cookie == pastebin.password:
-            return render_template("pastebin.html", user=current_user, pastebin=pastebin)
+            return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.now().replace(microsecond=0))
          else:
             if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
-               return render_template("pastebin.html", user=current_user, pastebin=pastebin)
+               return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.now().replace(microsecond=0))
             else:
                flash("This pastebin is private.", category="error")
-               return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password)
+               return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password, time=datetime.now().replace(microsecond=0))
       else:
          flash("Can't find pastebin.", category="error")
          return redirect(url_for("views.home"))

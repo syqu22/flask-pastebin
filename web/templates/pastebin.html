@@ -27,4 +27,9 @@
 {% endif %}
 <script type="text/javascript" src="{{ url_for('static',filename='js/copy_all.js') }}"></script>
 {% endif %}
+
+{% if pastebin.expire_date %}
+<br />
+<small id="expire_date">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
+{% endif %}
 {% endblock %}

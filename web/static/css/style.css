@@ -5,3 +5,7 @@ textarea {
 .navbar {
     background-color: #c1c5c9;
 }
+
+#expire_date {
+    color: red;
+}

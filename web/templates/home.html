@@ -9,14 +9,23 @@
         <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" />
       </div>
       <label for="pastebin" class="mt-3">Paste</label>
-      <textarea rows="25" style="height:100%" name="pastebin" id="pastebin" class="form-control"
+      <textarea rows="21" style="height:100%" name="pastebin" id="pastebin" class="form-control"
         placeholder="Enter text"></textarea>
       <br />
       <label for="private">Private</label>
       <input class="form-check-input" type="checkbox" id="private" name="private" value="True">
       <input type="text" class="form-control" id="password" name="password" placeholder="Enter password" disabled />
+      <label for="expire">Expiration</label>
+      <input class="form-check-input" type="checkbox" id="expire" name="expire" value="True">
+      <select class="form-select" id="expire_select" name="expire_select" disabled>
+        <option value="never">Never</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
       <div align="center">
-        <button type="submit" class="btn btn-secondary mt-2">Create pastebin</button>
+        <button type="submit" class="btn btn-secondary mt-2 mb-2">Create pastebin</button>
       </div>
     </form>
   </div>
