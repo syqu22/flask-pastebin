@@ -47,7 +47,7 @@ def pastebin(link: str):
          if not pastebin.password or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin)
          else:
-            if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
+            if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
                return render_template("pastebin.html", user=current_user, pastebin=pastebin)
             else:
                flash("This pastebin is private.", category="error")
@@ -82,7 +82,7 @@ def raw_pastebin(link: str):
       if not pastebin.password or password_cookie == pastebin.password:
          return response
       else:
-         if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
+         if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
             return response
          else:
             flash("This pastebin is private.", category="error")
@@ -105,7 +105,7 @@ def download_pastebin(link: str):
       if not pastebin.password or password_cookie == pastebin.password:
          return response
       else:
-         if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
+         if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
             return response
          else:
             flash("This pastebin is private.", category="error")
@@ -121,7 +121,7 @@ def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
 
    if pastebin:
-      if pastebin.user_id != None and str(pastebin.user_id) == current_user.get_id():
+      if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
          db.session.delete(pastebin)
          db.session.commit()
          flash("Sucessfully removed pastebin.", category="success")
