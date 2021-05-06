@@ -16,6 +16,9 @@
 {% else %}
 <h1 class="display-5 text-break">Name: {{ pastebin.title }}</h1>
 <small>Created on: {{ pastebin.date }}</small>
+{% if pastebin.expire_date %}
+<small id="expire_date">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
+{% endif %}
 <textarea rows="25" style="height:100%" name="pastebin" id="pastebin" class="form-control"
     readonly>{{ pastebin.content }}</textarea>
 <br>
@@ -29,7 +32,6 @@
 {% endif %}
 
 {% if pastebin.expire_date %}
-<br />
-<small id="expire_date">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
+
 {% endif %}
 {% endblock %}

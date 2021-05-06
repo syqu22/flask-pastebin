@@ -35,8 +35,15 @@ def home():
             else:
                flash("Please input password else uncheck Private.", category="error")
                return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
+         #Set expiration date and add the date to pastebin model if checkbox is checked
          if expire == "True" and expiration_date != "never":
-            if expiration_date == "day":
+            if expiration_date == "1min":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(minutes=+1)
+            elif expiration_date == "15min":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(minutes=+15)
+            elif expiration_date == "hour":
+               new_pastebin.expire_date = new_pastebin.date + relativedelta(hours=+1)
+            elif expiration_date == "day":
                new_pastebin.expire_date = new_pastebin.date + relativedelta(days=+1)
             elif expiration_date == "week":
                new_pastebin.expire_date = new_pastebin.date + relativedelta(weeks=+1)
@@ -59,16 +66,16 @@ def pastebin(link: str):
    if request.method == "GET":
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
-
-      if pastebin:
+      
+      if pastebin and remove_expired_pastebin(pastebin):
          if not pastebin.password or password_cookie == pastebin.password:
-            return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.now().replace(microsecond=0))
+            return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
          else:
             if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
-               return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.now().replace(microsecond=0))
+               return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
             else:
                flash("This pastebin is private.", category="error")
-               return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password, time=datetime.now().replace(microsecond=0))
+               return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0))
       else:
          flash("Can't find pastebin.", category="error")
          return redirect(url_for("views.home"))
@@ -91,8 +98,9 @@ def pastebin(link: str):
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
+   remove_expired_pastebin(pastebin)
 
-   if pastebin:   
+   if pastebin and remove_expired_pastebin(pastebin):   
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
 
@@ -113,8 +121,9 @@ def raw_pastebin(link: str):
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
+   remove_expired_pastebin(pastebin)
 
-   if pastebin:
+   if pastebin and remove_expired_pastebin(pastebin):
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
       response.headers.add("Content-Disposition", "attachment", filename=link+".txt")
@@ -136,8 +145,9 @@ def download_pastebin(link: str):
 @views.route("/delete/<link>")
 def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
+   remove_expired_pastebin(pastebin)
 
-   if pastebin:
+   if pastebin and remove_expired_pastebin(pastebin):
       if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
          db.session.delete(pastebin)
          db.session.commit()
@@ -175,5 +185,18 @@ def encode_link(link):
 #Get last 10 pastebins that are not private
 def get_public_pastebins():
    pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
-
+   for pastebin in pastebins:
+      remove_expired_pastebin(pastebin)
    return pastebins
+
+#Check if pastebin date expired, if so delete it from database
+def remove_expired_pastebin(pastebin: Pastebin):
+   if pastebin.expire_date is not None:
+      if datetime.utcnow() > pastebin.expire_date:
+         db.session.delete(pastebin)
+         db.session.commit()
+         return False
+      else:
+         return True
+   else:
+      return True
