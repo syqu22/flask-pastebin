@@ -24,9 +24,13 @@ def home():
          new_pastebin.link = encode_link(new_pastebin.id)
          response = make_response(redirect(url_for("views.pastebin", link=new_pastebin.link)))
          if private == "True":
-            new_pastebin.password = generate_password_hash(password, method="sha256")
-            #Set cookie using format k = pastebin link, v = hashed password
-            response.set_cookie(new_pastebin.link, new_pastebin.password)  
+            if password != "".strip():
+               new_pastebin.password = generate_password_hash(password, method="sha256")
+               #Set cookie using format k = pastebin link, v = hashed password
+               response.set_cookie(new_pastebin.link, new_pastebin.password)
+            else:
+               flash("Please input password else uncheck Private.", category="error")
+               return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
          #Update the same pastebin with new link based on ID and password
          db.session.commit()
