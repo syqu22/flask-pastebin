@@ -5,13 +5,13 @@ from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from web.models import Pastebin
+from web.models.pastebin import Pastebin
 from web import db
 
-views = Blueprint("views", __name__)
+pastebin_view = Blueprint("pastebin_view", __name__)
 
 #Create pastebin
-@views.route("/", methods=["GET", "POST"])
+@pastebin_view.route("/", methods=["GET", "POST"])
 def home():
    if request.method == "POST":
       title = request.form.get("title")
@@ -26,7 +26,7 @@ def home():
          db.session.add(new_pastebin)
          db.session.commit()
          new_pastebin.link = encode_link(new_pastebin.id)
-         response = make_response(redirect(url_for("views.pastebin", link=new_pastebin.link)))
+         response = make_response(redirect(url_for("pastebin_view.pastebin", link=new_pastebin.link)))
          if private == "True":
             if password != "".strip():
                new_pastebin.password = generate_password_hash(password, method="sha256")
@@ -61,13 +61,13 @@ def home():
    return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
 #View pastebin
-@views.route("/<link>", methods=["GET", "POST"])
+@pastebin_view.route("/<link>", methods=["GET", "POST"])
 def pastebin(link: str):
    if request.method == "GET":
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
       
-      if pastebin and is_pastebin_expired(pastebin):
+      if pastebin and pastebin.is_expired():
          if not pastebin.password or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
          else:
@@ -78,7 +78,7 @@ def pastebin(link: str):
                return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0))
       else:
          flash("Can't find pastebin.", category="error")
-         return redirect(url_for("views.home"))
+         return redirect(url_for("pastebin_view.home"))
    
    if request.method == "POST":
       pastebin = Pastebin.query.filter_by(link=link).first()
@@ -91,16 +91,16 @@ def pastebin(link: str):
          return response
       else:
          flash("Password is incorrect!", category="error")
-         return redirect(url_for("views.pastebin", link=link))
+         return redirect(url_for("pastebin_view.pastebin", link=link))
 
 #View raw pastebin
-@views.route("/raw/<link>")
+@pastebin_view.route("/raw/<link>")
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   is_pastebin_expired(pastebin)
+   pastebin.is_expired()
 
-   if pastebin and is_pastebin_expired(pastebin):   
+   if pastebin and pastebin.is_expired():   
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
 
@@ -111,19 +111,19 @@ def raw_pastebin(link: str):
             return response
          else:
             flash("This pastebin is private.", category="error")
-            return redirect(url_for("views.pastebin", link=link))
+            return redirect(url_for("pastebin_view.pastebin", link=link))
    else:
       flash("Can't find pastebin.", category="error")
-      return redirect(url_for("views.home"))
+      return redirect(url_for("pastebin_view.home"))
 
 #Download pastebin
-@views.route("/download/<link>")
+@pastebin_view.route("/download/<link>")
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   is_pastebin_expired(pastebin)
+   pastebin.is_expired()
 
-   if pastebin and is_pastebin_expired(pastebin):
+   if pastebin and pastebin.is_expired():
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
       response.headers.add("Content-Disposition", "attachment", filename=link+".txt")
@@ -135,19 +135,19 @@ def download_pastebin(link: str):
             return response
          else:
             flash("This pastebin is private.", category="error")
-            return redirect(url_for("views.pastebin", link=link))
+            return redirect(url_for("pastebin_view.pastebin", link=link))
    else:
       flash("Can't find pastebin.", category="error")
-      return redirect(url_for("views.home"))
+      return redirect(url_for("pastebin_view.home"))
 
 #Delete pastebin (Only user can remove his own pastebin)
 @login_required
-@views.route("/delete/<link>")
+@pastebin_view.route("/delete/<link>")
 def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
-   is_pastebin_expired(pastebin)
+   pastebin.is_expired()
 
-   if pastebin and is_pastebin_expired(pastebin):
+   if pastebin and pastebin.is_expired():
       if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
          db.session.delete(pastebin)
          db.session.commit()
@@ -155,10 +155,10 @@ def delete_pastebin(link: str):
          return redirect(url_for("user_view.user"))
       else:
          flash("You don't have permission to do that.", category="error")
-         return redirect(url_for("views.home"))
+         return redirect(url_for("pastebin_view.home"))
    else:
       flash("Can't find pastebin.", category="error")
-      return redirect(url_for("views.home"))
+      return redirect(url_for("pastebin_view.home"))
 
 #Validate pastebin
 def is_pastebin_valid(title: str, pastebin: str):
@@ -186,17 +186,5 @@ def encode_link(link):
 def get_public_pastebins():
    pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
    for pastebin in pastebins:
-      is_pastebin_expired(pastebin)
+      pastebin.is_expired()
    return pastebins
-
-#Check if pastebin date expired, if so delete it from database
-def is_pastebin_expired(pastebin: Pastebin):
-   if pastebin.expire_date is not None:
-      if datetime.utcnow() > pastebin.expire_date:
-         db.session.delete(pastebin)
-         db.session.commit()
-         return False
-      else:
-         return True
-   else:
-      return True

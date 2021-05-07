@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from web.models import User
-from werkzeug.security import generate_password_hash, check_password_hash
+from web.models.user import User
+from werkzeug.security import generate_password_hash
 from web import db
 from flask_login import login_user, login_required, logout_user, current_user
 
-auth = Blueprint("auth", __name__)
+auth_view = Blueprint("auth_view", __name__)
 
 #Login view
-@auth.route("/login", methods=["GET", "POST"])
+@auth_view.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -16,10 +16,10 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user:
             #If user with given username exists and passwords are correct Log him In
-            if check_password_hash(user.password, password):
+            if user.check_password(password):
                 flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for("views.home"))
+                return redirect(url_for("pastebin_view.home"))
             else:
                 flash("Incorrect password, try again.", category="error")
         else:
@@ -28,7 +28,7 @@ def login():
     return render_template("login.html", user=current_user)
 
 #Sign up view
-@auth.route("/sign-up", methods=["GET", "POST"])
+@auth_view.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
         username = request.form.get("username")
@@ -44,16 +44,16 @@ def sign_up():
             login_user(new_user, remember=True)
             flash("Account successfully created!", category="success")
 
-            return redirect(url_for("views.home"))  
+            return redirect(url_for("pastebin_view.home"))  
 
     return render_template("sign_up.html", user=current_user)
 
 #Log out view
-@auth.route("/logout")
+@auth_view.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth_view.login"))
 
 #Validate user
 def is_user_valid(username: str, email: str, password1: str, password2: str):
