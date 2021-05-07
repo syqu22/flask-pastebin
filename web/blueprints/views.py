@@ -67,7 +67,7 @@ def pastebin(link: str):
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
       
-      if pastebin and remove_expired_pastebin(pastebin):
+      if pastebin and is_pastebin_expired(pastebin):
          if not pastebin.password or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
          else:
@@ -98,9 +98,9 @@ def pastebin(link: str):
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   remove_expired_pastebin(pastebin)
+   is_pastebin_expired(pastebin)
 
-   if pastebin and remove_expired_pastebin(pastebin):   
+   if pastebin and is_pastebin_expired(pastebin):   
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
 
@@ -121,9 +121,9 @@ def raw_pastebin(link: str):
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   remove_expired_pastebin(pastebin)
+   is_pastebin_expired(pastebin)
 
-   if pastebin and remove_expired_pastebin(pastebin):
+   if pastebin and is_pastebin_expired(pastebin):
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
       response.headers.add("Content-Disposition", "attachment", filename=link+".txt")
@@ -145,9 +145,9 @@ def download_pastebin(link: str):
 @views.route("/delete/<link>")
 def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
-   remove_expired_pastebin(pastebin)
+   is_pastebin_expired(pastebin)
 
-   if pastebin and remove_expired_pastebin(pastebin):
+   if pastebin and is_pastebin_expired(pastebin):
       if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
          db.session.delete(pastebin)
          db.session.commit()
@@ -186,11 +186,11 @@ def encode_link(link):
 def get_public_pastebins():
    pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
    for pastebin in pastebins:
-      remove_expired_pastebin(pastebin)
+      is_pastebin_expired(pastebin)
    return pastebins
 
 #Check if pastebin date expired, if so delete it from database
-def remove_expired_pastebin(pastebin: Pastebin):
+def is_pastebin_expired(pastebin: Pastebin):
    if pastebin.expire_date is not None:
       if datetime.utcnow() > pastebin.expire_date:
          db.session.delete(pastebin)

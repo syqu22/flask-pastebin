@@ -9,3 +9,25 @@ textarea {
 #expire_date {
     color: red;
 }
+
+#footer {
+    background-color: rgba(196, 186, 186, 0.2);
+}
+
+h3 {
+    text-align: center;
+}
+
+#create_pastebin_btn {
+    text-align: center;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.pastebin_button_form {
+    display: inline;
+}

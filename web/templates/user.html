@@ -10,7 +10,9 @@
       </div>
       <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>
     </a>
-    <a href="/delete/{{ pastebin.link }}"><button class="btn btn-danger mt-1">Delete</button></a>
+    <form class="pastebin_button_form" action="/delete/{{ pastebin.link }}">
+      <button class="btn btn-danger mt-1">Delete</button>
+    </form>
   </div>
   {% endfor %}
 </div>

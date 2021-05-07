@@ -9,7 +9,7 @@
         <label for="password">Password</label>
         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" />
     </div>
-    <div align="center">
+    <div>
         <button type="submit" class="btn btn-primary mt-2">Enter</button>
     </div>
 </form>
@@ -23,10 +23,16 @@
     readonly>{{ pastebin.content }}</textarea>
 <br>
 <button id="copy-all" class="btn btn-primary">Copy all</button>
-<a href="/raw/{{ pastebin.link }}"><button id="raw" class="btn btn-primary">Raw</button></a>
-<a href="/download/{{ pastebin.link }}"><button id="download" class="btn btn-primary">Download</button></a>
+<form class="pastebin_button_form" action="/raw/{{ pastebin.link }}">
+    <button id="raw" class="btn btn-primary">Raw</button>
+</form>
+<form class="pastebin_button_form" action="/download/{{ pastebin.link }}">
+    <button id="download" class="btn btn-primary">Download</button>
+</form>
 {% if user.id == pastebin.user_id %}
-<a href="/delete/{{ pastebin.link }}"><button class="btn btn-danger">Delete</button></a>
+<form class="pastebin_button_form" action="/delete/{{ pastebin.link }}">
+    <button class="btn btn-danger">Delete</button>
+</form>
 {% endif %}
 <script type="text/javascript" src="{{ url_for('static',filename='js/copy_all.js') }}"></script>
 {% endif %}
