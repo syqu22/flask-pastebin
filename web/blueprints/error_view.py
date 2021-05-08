@@ -5,15 +5,15 @@ error_view = Blueprint("error_view", __name__)
 
 @error_view.app_errorhandler(400)
 def page_not_found_error(e):
-    return render_template("errors/404.html", user=current_user), 400
+    return render_template("errors/400.html", user=current_user), 400
 
 @error_view.app_errorhandler(401)
 def page_not_found_error(e):
-    return render_template("errors/404.html", user=current_user), 401
+    return render_template("errors/401.html", user=current_user), 401
 
 @error_view.app_errorhandler(403)
 def page_not_found_error(e):
-    return render_template("errors/404.html", user=current_user), 403
+    return render_template("errors/403.html", user=current_user), 403
 
 @error_view.app_errorhandler(404)
 def page_not_found_error(e):
