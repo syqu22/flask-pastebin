@@ -16,13 +16,14 @@ def home():
    if request.method == "POST":
       title = request.form.get("title")
       pastebin = request.form.get("pastebin")
+      paste_type = request.form.get("type_select")
       private = request.form.get("private")
       password = request.form.get("password")
-      expire = request.form.get("expire")
+      expire_select = request.form.get("expire")
       expiration_date = request.form.get("expire_select")
 
-      if is_pastebin_valid(title, pastebin):
-         new_pastebin = Pastebin(title=title if title != "" else None, content=pastebin, user_id=current_user.get_id())  
+      if ispastebin_valid(title, pastebin, paste_type):
+         new_pastebin = Pastebin(title=title if title != "" else None, content=pastebin, paste_type=paste_type, user_id=current_user.get_id())  
          db.session.add(new_pastebin)
          db.session.commit()
          new_pastebin.encode_link()
@@ -35,22 +36,8 @@ def home():
             else:
                flash("Please input password else uncheck Private.", category="error")
                return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
-         #Set expiration date and add the date to pastebin model if checkbox is checked
-         if expire == "True" and expiration_date != "never":
-            if expiration_date == "1min":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(minutes=+1)
-            elif expiration_date == "15min":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(minutes=+15)
-            elif expiration_date == "hour":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(hours=+1)
-            elif expiration_date == "day":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(days=+1)
-            elif expiration_date == "week":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(weeks=+1)
-            elif expiration_date == "month":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(months=+1)
-            elif expiration_date == "year":
-               new_pastebin.expire_date = new_pastebin.date + relativedelta(years=+1)
+
+         validate_expiration_date(new_pastebin, expire_select, expiration_date)
 
          #Update the same pastebin with new link based on ID and optionally password and/or expiration date
          db.session.commit()
@@ -158,16 +145,41 @@ def delete_pastebin(link: str):
       return redirect(url_for("pastebin_view.home"))
 
 #Validate pastebin
-def is_pastebin_valid(title: str, pastebin: str):
+def ispastebin_valid(title: str, pastebin: str, paste_type: str):
+   types = [
+      "text", "bash", "c", "c#", "c++", "css", "go", "html", "http", "ini", "java", "js","json", "kotlin", 
+      "lua", "markdown", "objectivec", "perl", "php", "python", "r", "ruby", "rust", "sql", "swift", "typescript"]
+
    if len(title) > 150:
       flash("Title cannot exceed 150 characters limit.", category="error")
    elif len(pastebin) < 1:
       flash("Your pastebin must be at least 1 character long.", category="error")
    elif len(pastebin) > 6000000:
       flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
+   elif paste_type not in types:
+      flash("The syntax type you have choosed does not exist.", category="error")
    else:
       return True
 
+#Set expiration date and add the date to pastebin model if checkbox is checked and time choosed
+def validate_expiration_date(pastebin: Pastebin, expire_select: str, date: str):
+   if expire_select == "True" and date != "never":
+      if date == "1min":
+         pastebin.expire_date = pastebin.date + relativedelta(minutes=+1)
+      elif date == "15min":
+         pastebin.expire_date = pastebin.date + relativedelta(minutes=+15)
+      elif date == "hour":
+         pastebin.expire_date = pastebin.date + relativedelta(hours=+1)
+      elif date == "day":
+         pastebin.expire_date = pastebin.date + relativedelta(days=+1)
+      elif date == "week":
+         pastebin.expire_date = pastebin.date + relativedelta(weeks=+1)
+      elif date == "month":
+         pastebin.expire_date = pastebin.date + relativedelta(months=+1)
+      elif date == "year":
+         pastebin.expire_date = pastebin.date + relativedelta(years=+1)
+      else:
+         flash("The date you have choosed does not exist.", category="error")
 
 #Get last 10 pastebins that are not private
 def get_public_pastebins():
