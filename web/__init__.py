@@ -31,11 +31,13 @@ def create_app():
     from web.blueprints import pastebin_view
     from web.blueprints import auth_view
     from web.blueprints import user_view
+    from web.blueprints import error_view
 
     #Register urls
     app.register_blueprint(pastebin_view.pastebin_view, url_prefix="/")
     app.register_blueprint(auth_view.auth_view, url_prefix="/")
     app.register_blueprint(user_view.user_view, url_prefix="/")
+    app.register_blueprint(error_view.error_view, url_prefix="/")
 
     create_database(app)
     #Set up login manager

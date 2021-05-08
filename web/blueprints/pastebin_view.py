@@ -1,6 +1,6 @@
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
@@ -55,17 +55,19 @@ def pastebin(link: str):
       password_cookie = request.cookies.get(link)
       
       if pastebin and not pastebin.is_expired():
+         #Check if pastebin is private or if there is password alread saved in cookie
          if not pastebin.password or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
          else:
+            #If there is a password but pastebin is owned by current user, render page
             if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
                return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
             else:
+               #Render page with password attribute
                flash("This pastebin is private.", category="error")
                return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0))
       else:
-         flash("Can't find pastebin.", category="error")
-         return redirect(url_for("pastebin_view.home"))
+         abort(404)
    
    if request.method == "POST":
       pastebin = Pastebin.query.filter_by(link=link).first()
@@ -99,8 +101,7 @@ def raw_pastebin(link: str):
             flash("This pastebin is private.", category="error")
             return redirect(url_for("pastebin_view.pastebin", link=link))
    else:
-      flash("Can't find pastebin.", category="error")
-      return redirect(url_for("pastebin_view.home"))
+      abort(404)
 
 #Download pastebin
 @pastebin_view.route("/download/<link>")
@@ -122,8 +123,7 @@ def download_pastebin(link: str):
             flash("This pastebin is private.", category="error")
             return redirect(url_for("pastebin_view.pastebin", link=link))
    else:
-      flash("Can't find pastebin.", category="error")
-      return redirect(url_for("pastebin_view.home"))
+      abort(404)
 
 #Delete pastebin (Only user can remove his own pastebin)
 @login_required
@@ -141,8 +141,7 @@ def delete_pastebin(link: str):
          flash("You don't have permission to do that.", category="error")
          return redirect(url_for("pastebin_view.home"))
    else:
-      flash("Can't find pastebin.", category="error")
-      return redirect(url_for("pastebin_view.home"))
+      abort(404)
 
 #Validate pastebin
 def ispastebin_valid(title: str, pastebin: str, paste_type: str):
@@ -178,8 +177,6 @@ def validate_expiration_date(pastebin: Pastebin, expire_select: str, date: str):
          pastebin.expire_date = pastebin.date + relativedelta(months=+1)
       elif date == "year":
          pastebin.expire_date = pastebin.date + relativedelta(years=+1)
-      else:
-         flash("The date you have choosed does not exist.", category="error")
 
 #Get last 10 pastebins that are not private
 def get_public_pastebins():
