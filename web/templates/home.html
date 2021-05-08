@@ -9,9 +9,38 @@
         <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" />
       </div>
       <label for="pastebin" class="mt-3">Paste</label>
-      <textarea rows="15" style="height:100%" name="pastebin" id="pastebin" class="form-control"
+      <textarea rows="17" style="height:100%" name="pastebin" id="pastebin" class="form-control"
         placeholder="Enter text"></textarea>
       <br />
+      <label for="paste_select">Syntax type</label>
+      <select class="form-select" id="type_select" name="type_select">
+        <option value="text">Text</option>
+        <option value="bash">Bash</option>
+        <option value="c">C</option>
+        <option value="c#">C#</option>
+        <option value="c++">C++</option>
+        <option value="css">CSS</option>
+        <option value="go">GO</option>
+        <option value="html">HTML/XML</option>
+        <option value="http">HTTP</option>
+        <option value="ini">INI</option>
+        <option value="java">Java</option>
+        <option value="js">JavaScript</option>
+        <option value="json">JSON</option>
+        <option value="kotlin">Kotlin</option>
+        <option value="lua">LUA</option>
+        <option value="markdown">Markdown</option>
+        <option value="objectivec">Objective-C</option>
+        <option value="perl">Perl</option>
+        <option value="php">PHP</option>
+        <option value="python">Python</option>
+        <option value="r">R</option>
+        <option value="ruby">Ruby</option>
+        <option value="rust">Rust</option>
+        <option value="sql">SQL</option>
+        <option value="swift">Swift</option>
+        <option value="typescript">Typescript</option>
+      </select>
       <label for="private">Private</label>
       <input class="form-check-input" type="checkbox" id="private" name="private" value="True">
       <input type="text" class="form-control" id="password" name="password" placeholder="Enter password" disabled />
@@ -38,6 +67,7 @@
       {% for pastebin in public_pastebins %}
       <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
         <div class="d-flex w-100 justify-content-between">
+          <span class="badge bg-success">{{ pastebin.paste_type }}</span>
           <small>{{ pastebin.date.replace(microsecond=0) }}</small>
         </div>
         <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>
