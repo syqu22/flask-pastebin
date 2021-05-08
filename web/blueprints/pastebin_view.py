@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from web.models.pastebin import Pastebin
 from web import db
 
@@ -25,7 +25,7 @@ def home():
          new_pastebin = Pastebin(title=title if title != "" else None, content=pastebin, user_id=current_user.get_id())  
          db.session.add(new_pastebin)
          db.session.commit()
-         new_pastebin.link = encode_link(new_pastebin.id)
+         new_pastebin.encode_link()
          response = make_response(redirect(url_for("pastebin_view.pastebin", link=new_pastebin.link)))
          if private == "True":
             if password != "".strip():
@@ -67,7 +67,7 @@ def pastebin(link: str):
       pastebin = Pastebin.query.filter_by(link=link).first()
       password_cookie = request.cookies.get(link)
       
-      if pastebin and pastebin.is_expired():
+      if pastebin and not pastebin.is_expired():
          if not pastebin.password or password_cookie == pastebin.password:
             return render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0))
          else:
@@ -86,7 +86,7 @@ def pastebin(link: str):
       response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin))
 
       #If password is correct save it as a cookie for later use
-      if check_password_hash(pastebin.password, password):
+      if pastebin.check_password(password):
          response.set_cookie(link, pastebin.password)
          return response
       else:
@@ -98,9 +98,8 @@ def pastebin(link: str):
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   pastebin.is_expired()
 
-   if pastebin and pastebin.is_expired():   
+   if pastebin and not pastebin.is_expired():   
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
 
@@ -121,9 +120,8 @@ def raw_pastebin(link: str):
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
    password_cookie = request.cookies.get(link)
-   pastebin.is_expired()
 
-   if pastebin and pastebin.is_expired():
+   if pastebin and not pastebin.is_expired():
       response = make_response(pastebin.content)
       response.headers.add("Content-Type", "text/plain")
       response.headers.add("Content-Disposition", "attachment", filename=link+".txt")
@@ -145,9 +143,8 @@ def download_pastebin(link: str):
 @pastebin_view.route("/delete/<link>")
 def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first()
-   pastebin.is_expired()
 
-   if pastebin and pastebin.is_expired():
+   if pastebin and not pastebin.is_expired():
       if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
          db.session.delete(pastebin)
          db.session.commit()
@@ -171,16 +168,6 @@ def is_pastebin_valid(title: str, pastebin: str):
    else:
       return True
 
-#Encode link using base36
-def encode_link(link):
-      assert link >= 0, 'Positive integer is required'
-      if link == 0:
-            return '0'
-      base36 = []
-      while link != 0:
-         link, i = divmod(link, 36)
-         base36.append('0123456789abcdefghijklmnopqrstuvwxyz'[i])
-      return ''.join(reversed(base36))
 
 #Get last 10 pastebins that are not private
 def get_public_pastebins():
