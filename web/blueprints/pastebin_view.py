@@ -98,8 +98,7 @@ def raw_pastebin(link: str):
          if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
             return response
          else:
-            flash("This pastebin is private.", category="error")
-            return redirect(url_for("pastebin_view.pastebin", link=link))
+            abort(403)
    else:
       abort(404)
 
@@ -120,8 +119,7 @@ def download_pastebin(link: str):
          if pastebin.user_id is not None and str(pastebin.user_id) == current_user.get_id():
             return response
          else:
-            flash("This pastebin is private.", category="error")
-            return redirect(url_for("pastebin_view.pastebin", link=link))
+            abort(403)
    else:
       abort(404)
 
@@ -138,8 +136,7 @@ def delete_pastebin(link: str):
          flash("Sucessfully removed pastebin.", category="success")
          return redirect(url_for("user_view.user"))
       else:
-         flash("You don't have permission to do that.", category="error")
-         return redirect(url_for("pastebin_view.home"))
+         abort(403)
    else:
       abort(404)
 
