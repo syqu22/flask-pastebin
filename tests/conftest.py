@@ -1,58 +1,51 @@
-import os
-import tempfile
-
 import pytest
 
 from web import create_app, db
+from web.models.user import User
+from web.models.pastebin import Pastebin
 
-# read in SQL for populating test data
-with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
-    _data_sql = f.read().decode("utf8")
-
-@pytest.fixture
-def app():
-    """Create and configure a new app instance for each test."""
-    # create a temporary file to isolate the database for each test
-    db_fd, db_path = tempfile.mkstemp()
-    # create the app with common test config
-    app = create_app()
-    app.config["TESTING"] = True
-    app.config["DATABASE"] = db_path
-
-    # create the database and load test data
-    with app.app_context():
-        db.init_app(app)
-
-    yield app
-
-    # close and remove the temporary database
-    os.close(db_fd)
-    os.unlink(db_path)
-
-@pytest.fixture
-def client(app):
-    """A test client for the app."""
-    return app.test_client()
+@pytest.fixture(scope="module")
+def new_user():
+    password = "password"
+    user = User("testing user", "testing@user.com", password)
+    return user
 
 
-@pytest.fixture
-def runner(app):
-    """A test runner for the app's Click commands."""
-    return app.test_cli_runner()
+@pytest.fixture(scope="module")
+def test_client():
+    flask_app = create_app("flask_test.cfg")
 
-class AuthActions(object):
-    def __init__(self, client):
-        self._client = client
+    with flask_app.test_client() as testing_client:
+        with flask_app.app_context():
+            yield testing_client
 
-def login(self, username="test", password="test"):
-    return self._client.post(
-        "/auth/login", data={"username": username, "password": password}
-    )
+@pytest.fixture(scope="module")
+def init_database(client):
+    db.create_all()
 
-def logout(self):
-    return self._client.get("/auth/logout")
+    user1 = User("testing user 1", "testing@user1.com", "password")
+    user2 = User("testing user 2", "testing@user2.com", "password")
+    
+    db.session.add(user1)
+    db.session.add(user2)
 
+    db.session.commit()
 
-@pytest.fixture
-def auth(client):
-    return AuthActions(client)
+    pastebin1 = Pastebin("Test content pastebin 1", "text", user1.id)
+    pastebin2 = Pastebin("Test content pastebin 2", "css", None)
+
+    db.session.add(pastebin1)
+    db.session.add(pastebin2)
+    db.session.commit()
+
+    yield
+
+    db.drop_all()
+
+@pytest.fixture(scope="function")
+def login_default_user(test_client):
+    test_client.post("/login",data=dict("testing user", "testing@user", "password"), follow_redirects=True)
+
+    yield
+
+    test_client.get('/logout', follow_redirects=True)
