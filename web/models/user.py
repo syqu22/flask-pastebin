@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
         if len(self.username) < 4:
             flash("Username must be greater than 3 characters.", category="error")
             return False
-        if len(self.email) < 4:
+        elif len(self.email) < 4:
             flash("Email must be greater than 3 characters.", category="error")
             return False
         elif len(password1) < 5:

@@ -81,13 +81,13 @@ class Pastebin(db.Model):
             if len(self.title) > 150:
                 flash("Title cannot exceed 150 characters limit.", category="error")
                 return False
-        if len(self.content) < 1:
+        elif len(self.content) < 1:
             flash("Your pastebin must be at least 1 character long.", category="error")
             return False
-        if len(self.content) > 6000000:
+        elif len(self.content) > 6000000:
             flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
             return False
-        if self.paste_type not in types:
+        elif self.paste_type not in types:
             flash("The syntax type you have choosed does not exist.", category="error")
             return False
         else:
