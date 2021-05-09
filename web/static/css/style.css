@@ -1,9 +1,23 @@
-textarea {
-    resize: none;
+h3 {
+    text-align: center;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 .navbar {
     background-color: #c1c5c9;
+}
+
+.nav-user{
+    margin-left:20px;
+  }
+
+.pastebin_button_form {
+    display: inline;
 }
 
 #expire_date {
@@ -14,20 +28,6 @@ textarea {
     background-color: rgba(196, 186, 186, 0.2);
 }
 
-h3 {
-    text-align: center;
-}
-
 #create_pastebin_btn {
     text-align: center;
-}
-
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
-
-.pastebin_button_form {
-    display: inline;
 }

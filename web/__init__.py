@@ -14,7 +14,7 @@ def create_app():
     from web.models.pastebin import Pastebin
 
     app = Flask(__name__)
-    #Config of app
+    #Config of the flask app
     app.config['SECRET_KEY'] = secrets.token_hex(16)
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///db/{DB_NAME}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,6 +23,7 @@ def create_app():
     #Create admin
     admin = Admin(app, template_mode='bootstrap4')
 
+    #Add models to admin view
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(Pastebin, db.session))
 
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(error_view.error_view, url_prefix="/")
 
     create_database(app)
+    
     #Set up login manager
     login_manager = LoginManager()
     login_manager.login_view = "auth_view.login"
@@ -54,3 +56,4 @@ def create_app():
 def create_database(app):
     if not path.exists("web/db/" + DB_NAME):
         db.create_all(app=app)
+        db.session.execute("SELECT * FROM user")

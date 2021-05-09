@@ -16,7 +16,7 @@ def test_download_pastebin_route(client):
 
 def test_delete_pastebin_route(client):
     response = client.get("/delete/1")
-    assert response.status_code == 200
+    assert response.status_code == 403
 
 def test_login_route(client):
     response = client.get("/login")

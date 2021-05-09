@@ -4,7 +4,7 @@
 
 {% if password %}
 <form method="POST">
-    <h2>This pastebin is private, please enter password</h2>
+    <h2>This pastebin is private, please enter the password</h2>
     <div class="form-group">
         <label for="password">Password</label>
         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" />
@@ -21,7 +21,7 @@
 {% if pastebin.expire_date %}
 <small id="expire_date">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
 {% endif %}
-<pre class="mt-2"><code class= "{{ pastebin.type }}">{{ pastebin.content }}</code></pre>
+<pre class="mt-2"><code class= "{{ pastebin.paste_type }}" id="pastebin">{{ pastebin.content }}</code></pre>
 <button id="copy-all" class="btn btn-primary">Copy all</button>
 <form class="pastebin_button_form" action="/raw/{{ pastebin.link }}">
     <button id="raw" class="btn btn-primary">Raw</button>

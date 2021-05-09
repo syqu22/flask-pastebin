@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="row row-cols-4">
+  
   {% for pastebin in user.pastebins %}
   <div class="col p-3">
     <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
@@ -13,8 +14,12 @@
     <form class="pastebin_button_form" action="/delete/{{ pastebin.link }}">
       <button class="btn btn-danger mt-1">Delete</button>
     </form>
+    <form class="pastebin_button_form" action="/edit/{{ pastebin.link }}">
+      <button class="btn btn-primary mt-1">Edit</button>
+    </form>
   </div>
   {% endfor %}
+  
 </div>
 
 {% if not user.pastebins %}
