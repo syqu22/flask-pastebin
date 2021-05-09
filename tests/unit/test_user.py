@@ -34,7 +34,7 @@ def test_new_user_with_fixture(new_user):
     assert not new_user.is_anonymous
 
 
-def test_setting_password(new_user):
+def test_user_setting_password(new_user):
     """
     GIVEN an existing User
     WHEN the password for the user is set

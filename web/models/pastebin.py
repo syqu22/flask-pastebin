@@ -26,7 +26,7 @@ class Pastebin(db.Model):
         self.expire_date = self.format_expire_date(expire_date)
         self.link = str(uuid.uuid4())[:8]
         if password is not None:
-            self.password = generate_password_hash(password, method="sha256")
+            self.set_password(password)
 
     def is_expired(self):
         """
@@ -48,6 +48,12 @@ class Pastebin(db.Model):
         Return true if given password is the same as pastebin's password
         """
         return check_password_hash(self.password, password)
+
+    def set_password(self, password: str):
+        """
+        Generate a new password hash and set it for user
+        """
+        self.password = generate_password_hash(password, method="sha256")
 
     def format_expire_date(self, date: str):
         """

@@ -10,10 +10,17 @@ def new_user():
     user = User("testing user", "testing@user.com", password)
     return user
 
+@pytest.fixture(scope="module")
+def new_pastebin():
+    password = "password"
+    pastebin = Pastebin("test content", "text", None, "test title", None, password)
+    return pastebin
+
 
 @pytest.fixture(scope="module")
 def test_client():
-    flask_app = create_app("flask_test.cfg")
+    flask_app = create_app()
+    flask_app.config["TESTING"] = True
 
     with flask_app.test_client() as testing_client:
         with flask_app.app_context():
