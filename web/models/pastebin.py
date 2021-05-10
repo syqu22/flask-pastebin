@@ -38,8 +38,7 @@ class Pastebin(db.Model):
                 db.session.delete(self)
                 db.session.commit()
                 return True
-            else:
-                return False
+            return False
         else:
             return False
     
@@ -61,6 +60,7 @@ class Pastebin(db.Model):
         as long as input date is valid
         """
         dates = {
+            "test":  self.date,
             "1min":  self.date + relativedelta(minutes=+1),
             "15min": self.date + relativedelta(minutes=+15),
             "hour":  self.date + relativedelta(hours=+1),

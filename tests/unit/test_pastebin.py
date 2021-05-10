@@ -4,19 +4,16 @@ This file contains the unit tests for the pastebin model
 from web.models.pastebin import Pastebin
 from datetime import datetime
 
-def test_new_pastebin():
+def test_new_pastebin(new_pastebin):
     """
     GIVEN a Pastebin model
     WHEN a new Pastebin is created
     THEN check the title, content and paste_type are correct
     """
-
-    pastebin = Pastebin("test title", "test content", "text", None, None, None)
-
-    assert pastebin.content == "test content"
-    assert pastebin.title == "test title"
-    assert pastebin.paste_type == "text"
-    assert pastebin.is_valid()
+    assert new_pastebin.content == "test content"
+    assert new_pastebin.title == "test title"
+    assert new_pastebin.paste_type == "text"
+    assert new_pastebin.is_valid()
 
 def test_new_pastebin_extended():
     """

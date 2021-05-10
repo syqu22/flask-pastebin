@@ -127,7 +127,6 @@ def test_accessing_pastebin_protected_with_password_by_creator(test_client, init
     assert b"This pastebin is private, please enter the password" in response.data
     assert not pastebin.content.encode() in response.data
 
-
 def test_accessing_raw_pastebin(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
@@ -290,8 +289,24 @@ def test_delete_pastebin_by_creator(test_client, init_database, login_default_us
 
 def test_pastebin_date_expiration(test_client, init_database):
     """
-    GIVEN 
-    WHEN 
-    THEN 
+    GIVEN a Flask application configured for testing
+    WHEN  the "/" page is posted (POST)
+    THEN check that the date is invalid and delete it
     """
-    assert True
+    response = test_client.post("/", data=dict(title="test title", content="test content", paste_type="text", password=None, expire_date="test"), follow_redirects=True)
+    pastebin = Pastebin.query.filter_by(id=3).first()
+    
+    assert not pastebin
+    assert response.status_code == 404
+
+def test_pastebin_get_public_pastebins(test_client, init_database):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN  the "/" page is requested (GET)
+    THEN check that the get_public_pastebins function works correctly
+    """
+    pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
+    for pastebin in pastebins:
+        assert pastebin
+    
+    assert len(pastebins) == 1

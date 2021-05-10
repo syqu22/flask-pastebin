@@ -1,7 +1,6 @@
 """
 This file contains the unit tests for the user model
 """
-from web.models.user import User
 
 def test_new_user_with_fixture(new_user):
     """

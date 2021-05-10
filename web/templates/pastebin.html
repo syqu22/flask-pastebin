@@ -19,7 +19,8 @@
 <span class="badge bg-success">{{ pastebin.paste_type }}</span>
 <small>Created on: {{ pastebin.date }}</small>
 {% if pastebin.expire_date %}
-<small id="expire_date">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
+<small id="expire_date_info">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
+<script type="text/javascript" src="{{ url_for('static',filename='js/countdown.js') }}"></script>
 {% endif %}
 <pre class="mt-2"><code class= "{{ pastebin.paste_type }}" id="pastebin">{{ pastebin.content }}</code></pre>
 <button id="copy-all" class="btn btn-primary">Copy all</button>
