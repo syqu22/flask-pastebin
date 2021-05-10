@@ -2,7 +2,7 @@ var private_checkbox = document.getElementById("private");
 var expire_checkbox = document.getElementById("expire");
 
 var password_input = document.getElementById("password");
-var expire_select = document.getElementById("expire_select");
+var expire_select = document.getElementById("expire_date");
 
 // Change disabled property depending on if checkbox is clicked
 private_checkbox.addEventListener('change', function() {

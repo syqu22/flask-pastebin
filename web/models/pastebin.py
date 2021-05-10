@@ -11,21 +11,21 @@ class Pastebin(db.Model):
     title = db.Column(db.String(150), default="Untitled")
     content = db.Column(db.String(6000000))
     paste_type = db.Column(db.String(50))
-    link = db.Column(db.String(150), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     date = db.Column(db.DateTime(timezone=True))
     expire_date = db.Column(db.DateTime(timezone=True))
     password = db.Column(db.String(150))
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    link = db.Column(db.String(150), unique=True) 
 
-    def __init__(self, content: str, paste_type: str, user_id: id, title: str, expire_date: str, password: str):
+    def __init__(self, title: str, content: str, paste_type: str, user_id: id, expire_date: str, password: str):
+        self.title = title
         self.content = content
         self.paste_type = paste_type
         self.user_id = user_id
-        self.title = title
         self.date = datetime.utcnow().replace(microsecond=0)
         self.expire_date = self.format_expire_date(expire_date)
         self.link = str(uuid.uuid4())[:8]
-        if password is not None:
+        if password:
             self.set_password(password)
 
     def is_expired(self):
@@ -81,20 +81,23 @@ class Pastebin(db.Model):
         """
         types = {
         "text", "bash", "c", "c#", "c++", "css", "go", "html", "http", "ini", "java", "js","json", "kotlin", 
-        "lua", "markdown", "objectivec", "perl", "php", "python", "r", "ruby", "rust", "sql", "swift", "typescript"}
+        "lua", "markdown", "objectivec", "perl", "php", "python", "r", "ruby", "rust", "sql", "swift", "typescript",
+        }
 
-        if self.title:
-            if len(self.title) > 150:
-                flash("Title cannot exceed 150 characters limit.", category="error")
+        if self.content:
+            if self.title:
+                if len(self.title) > 150:
+                    flash("Title cannot exceed 150 characters limit.", category="error")
+                    return False
+            if len(self.content) > 6000000:
+                flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
                 return False
-        if len(self.content) < 1:
+            if self.paste_type not in types:
+                print("elo")
+                flash("The syntax type you have choosed does not exist.", category="error")
+                return False
+            else:
+                return True
+        else:
             flash("Your pastebin must be at least 1 character long.", category="error")
             return False
-        if len(self.content) > 6000000:
-            flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
-            return False
-        if self.paste_type not in types:
-            flash("The syntax type you have choosed does not exist.", category="error")
-            return False
-        else:
-            return True

@@ -13,11 +13,11 @@ def home():
    if request.method == "POST":
       title = request.form.get("title") or None
       content = request.form.get("content")
-      paste_type = request.form.get("type_select")
+      paste_type = request.form.get("paste_type")
       password = request.form.get("password") or None
-      expiration_date = request.form.get("expire_select") or None
+      expire_date = request.form.get("expire_date") or None
 
-      new_pastebin = Pastebin(content, paste_type, current_user.get_id(), title, expiration_date, password)
+      new_pastebin = Pastebin(title, content, paste_type, current_user.get_id(), expire_date, password)
       if new_pastebin.is_valid():
          response = make_response(redirect(url_for("pastebin_view.pastebin", link=new_pastebin.link)))
          if password:

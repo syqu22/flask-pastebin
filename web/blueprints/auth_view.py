@@ -8,6 +8,10 @@ auth_view = Blueprint("auth_view", __name__)
 #Login view
 @auth_view.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        flash("You are already logged in.", category="error")
+        return redirect(url_for("pastebin_view.home"))
+
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
