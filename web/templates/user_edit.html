@@ -5,11 +5,11 @@
   <h3 class="display-5">Edit</h3>
   <div class="form-group">
     <label for="username">Username</label>
-    <input type="text" class="form-control" id="username" name="username" placeholder="{{ user.username }}" />
+    <input type="text" class="form-control" id="username" name="username" placeholder="{{ user.username }}" value="{{ username }}"/>
   </div>
   <div class="form-group">
     <label for="email">E-Mail Address</label>
-    <input type="email" class="form-control" id="email" name="email" placeholder="{{ user.email }}" />
+    <input type="email" class="form-control" id="email" name="email" placeholder="{{ user.email }}" {{ email }}/>
   </div>
   <div class="form-group">
     <label for="new_password">New Password</label>

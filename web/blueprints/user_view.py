@@ -31,6 +31,7 @@ def edit_user():
          db.session.commit()
 
          login_user(user, remember=True)
-         return redirect(url_for("user_view.user"))  
+         return redirect(url_for("user_view.user"))
+      return render_template("user_edit.html", user=current_user, username=username, email=email)
 
    return render_template("user_edit.html", user=current_user)

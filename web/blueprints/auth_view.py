@@ -27,6 +27,7 @@ def login():
                 flash("Incorrect password, try again.", category="error")
         else:
             flash("Username doesn't exist.", category="error")
+        return render_template("login.html", user=current_user, username=username)
     
     return render_template("login.html", user=current_user)
 
@@ -50,7 +51,7 @@ def sign_up():
                 flash("Account successfully created!", category="success")
                 return redirect(url_for("pastebin_view.home"))
             
-            return redirect(url_for("auth_view.sign_up")) 
+            return render_template("sign_up.html", user=current_user, username=username, email=email)
 
     return render_template("sign_up.html", user=current_user)
 
