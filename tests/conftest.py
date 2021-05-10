@@ -4,6 +4,8 @@ from web import create_app, db
 from web.models.user import User
 from web.models.pastebin import Pastebin
 
+DB_NAME = "test_database.db"
+
 @pytest.fixture(scope="module")
 def new_user():
     password = "password"
@@ -21,14 +23,15 @@ def new_pastebin():
 def test_client():
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///db/{DB_NAME}"
 
     with flask_app.test_client() as testing_client:
         with flask_app.app_context():
+            db.create_all()
             yield testing_client
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def init_database(test_client):
-    db.create_all()
 
     user1 = User("user1", "testing@user1.com", "password")
     user2 = User("user2", "testing@user2.com", "password")
@@ -38,8 +41,8 @@ def init_database(test_client):
     
     db.session.add(user1)
     db.session.add(user2)
-    db.session.add(pastebin1)
-    db.session.add(pastebin2)
+    #db.session.add(pastebin1)
+    #db.session.add(pastebin2)
     db.session.commit()
 
     yield

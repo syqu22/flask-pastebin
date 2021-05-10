@@ -56,4 +56,3 @@ def create_app():
 def create_database(app):
     if not path.exists("web/db/" + DB_NAME):
         db.create_all(app=app)
-        db.session.execute("SELECT * FROM user")
