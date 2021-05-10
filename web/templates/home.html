@@ -61,8 +61,12 @@
       </div>
     </form>
   </div>
-  <div class="col mt-4">
-    <div class="list-group">
+  <div class="col mt-5">
+    <form class="d-flex mt-4" method="POST">
+      <input class="form-control me-3" type="search" id="search_input" placeholder="Enter tag">
+      <button class="btn btn-primary" type="button" id="search_button">Search</button>
+    </form>
+    <div class="list-group mt-4">
       <p class="lead">Last public pastebins:</p>
       {% for pastebin in public_pastebins %}
       <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
@@ -77,4 +81,5 @@
   </div>
 </div>
 <script type="text/javascript" src="{{ url_for('static',filename='js/pastebin_checkbox.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/search_bar.js') }}"></script>
 {% endblock %}

@@ -42,7 +42,6 @@ def test_invalid_login(test_client, init_database):
     """
     response = test_client.post("/login", data=dict(username="wrong_user", password="password"), follow_redirects=True)
     
-    print(response.data)
     assert response.status_code == 200
     assert b"User with this name does not exist." in response.data
     assert b"Login" in response.data

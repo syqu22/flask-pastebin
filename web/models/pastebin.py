@@ -93,7 +93,6 @@ class Pastebin(db.Model):
                 flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
                 return False
             if self.paste_type not in types:
-                print("elo")
                 flash("The syntax type you have choosed does not exist.", category="error")
                 return False
             else:
