@@ -3,30 +3,13 @@ This file contains the unit tests for the user model
 """
 from web.models.user import User
 
-
-def test_new_user():
-    """
-    GIVEN a User model
-    WHEN a new User is created
-    THEN check that username, email, password and Flask-Login fields are correct
-    """
-    password = "password"
-    user = User("test user", "testing@user.com", password)
-
-    assert user.email == "testing@user.com"
-    assert user.check_password(password)
-    assert user.is_authenticated
-    assert user.is_active
-    assert user.is_valid("password", "password")
-    assert not user.is_anonymous
-
 def test_new_user_with_fixture(new_user):
     """
     GIVEN a User model
     WHEN a new User is created
-    THEN check that username, email, password and Flask-Login fields are correct
+    THEN check the username, email, password and Flask-Login fields are correct
     """
-    assert new_user.email == "testing@user.com"
+    assert new_user.email == "testing@user1.com"
     assert new_user.check_password("password")
     assert new_user.is_authenticated
     assert new_user.is_active

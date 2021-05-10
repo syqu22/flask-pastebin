@@ -8,12 +8,12 @@ def test_new_pastebin():
     """
     GIVEN a Pastebin model
     WHEN a new Pastebin is created
-    THEN check that title, content and paste_type are correct
+    THEN check the title, content and paste_type are correct
     """
 
-    pastebin = Pastebin("test content", "text", None, "test title", None, None)
+    pastebin = Pastebin("test title", "test content", "text", None, None, None)
 
-    assert pastebin.content == "test user"
+    assert pastebin.content == "test content"
     assert pastebin.title == "test title"
     assert pastebin.paste_type == "text"
     assert pastebin.is_valid()
@@ -22,9 +22,9 @@ def test_new_pastebin_extended():
     """
     GIVEN a Pastebin model
     WHEN a new Pastebin is created
-    THEN check that title, content, paste_type are correct
+    THEN check the title, content, paste_type, user id and date are all correct
     """
-    pastebin = Pastebin("test content", "text", 2, "test title", datetime.utcnow(), "password")
+    pastebin = Pastebin("test title", "test content", "text", 2, datetime.utcnow(), "password")
 
     assert pastebin.content == "test content"
     assert pastebin.title == "test title"
@@ -38,7 +38,7 @@ def test_new_pastebin_extended():
 def test_pastebin_setting_password(new_pastebin):
     """
     GIVEN an existing Pastebin
-    WHEN the password for the user is set
+    WHEN the password for the Pastebin is set
     THEN check the password is stored correctly and not as plaintext
     """
     new_pastebin.set_password("password")

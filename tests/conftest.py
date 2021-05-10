@@ -7,13 +7,13 @@ from web.models.pastebin import Pastebin
 @pytest.fixture(scope="module")
 def new_user():
     password = "password"
-    user = User("testing user", "testing@user.com", password)
+    user = User("user1", "testing@user1.com", password)
     return user
 
 @pytest.fixture(scope="module")
 def new_pastebin():
     password = "password"
-    pastebin = Pastebin("test content", "text", None, "test title", None, password)
+    pastebin = Pastebin("test title", "test content", "text", None, None, password)
     return pastebin
 
 
@@ -26,21 +26,18 @@ def test_client():
         with flask_app.app_context():
             yield testing_client
 
-@pytest.fixture(scope="module")
-def init_database(client):
+@pytest.fixture(scope="function")
+def init_database(test_client):
     db.create_all()
 
-    user1 = User("testing user 1", "testing@user1.com", "password")
-    user2 = User("testing user 2", "testing@user2.com", "password")
+    user1 = User("user1", "testing@user1.com", "password")
+    user2 = User("user2", "testing@user2.com", "password")
+
+    pastebin1 = Pastebin("test title 1", "test content 1", "text", None, None, None)
+    pastebin2 = Pastebin("test title 2", "test content 2", "css", 1, None, "password")
     
     db.session.add(user1)
     db.session.add(user2)
-
-    db.session.commit()
-
-    pastebin1 = Pastebin("Test content pastebin 1", "text", user1.id)
-    pastebin2 = Pastebin("Test content pastebin 2", "css", None)
-
     db.session.add(pastebin1)
     db.session.add(pastebin2)
     db.session.commit()
@@ -51,7 +48,7 @@ def init_database(client):
 
 @pytest.fixture(scope="function")
 def login_default_user(test_client):
-    test_client.post("/login",data=dict("testing user", "testing@user", "password"), follow_redirects=True)
+    test_client.post("/login", data=dict(username="user1", password="password"), follow_redirects=True)
 
     yield
 
