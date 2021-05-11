@@ -2,23 +2,33 @@
 
 {% block content %}
 <form method="POST">
+    {{ form.csrf_token() }}
     <h3 class="display-5">Sign Up</h3>
     <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="{{ username }}"/>
+        {{ form.username.label}}
+        {{ form.username(class_="form-control")}}
+        {% for error in form.username.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
     </div>
     <div class="form-group">
-        <label for="email">E-Mail Address</label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="Enter e-mail" value="{{ email }}"/>
+        {{ form.email.label}}
+        {{ form.email(class_="form-control")}}
+        {% for error in form.email.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
     </div>
     <div class="form-group">
-        <label for="password1">Password</label>
-        <input type="password" class="form-control" id="password1" name="password1" placeholder="Enter password" />
+        {{ form.confirm_password.label}}
+        {{ form.confirm_password(class_="form-control")}}
+        {% for error in form.confirm_password.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
     </div>
     <div class="form-group">
-        <label for="password2">Confirm password</label>
-        <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password" />
+        {{ form.password.label}}
+        {{ form.password(class_="form-control")}}
     </div>
-    <button type="submit" class="btn btn-secondary mt-2">Submit</button>
+    {{ form.submit(class_="btn btn-secondary mt-2") }}
 </form>
 {% endblock %}

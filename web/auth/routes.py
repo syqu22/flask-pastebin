@@ -3,6 +3,7 @@ from web.models import User
 from web import db
 from flask_login import login_user, login_required, logout_user, current_user
 from web.auth import bp
+from web.auth.forms import LoginForm, SignupForm
 
 #Login view
 @bp.route("/login", methods=["GET", "POST"])
@@ -11,48 +12,31 @@ def login():
         flash("You are already logged in.", category="error")
         return redirect(url_for("pastebins.home"))
 
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+    form = LoginForm()
 
-        user = User.query.filter_by(username=username).first()
-        if user:
-            #If user with given username exists and passwords are correct Log him In
-            if user.check_password(password):
-                flash("Logged in successfully!", category="success")
-                login_user(user, remember=True)
-                return redirect(url_for("pastebins.home"))
-            else:
-                flash("Incorrect password, try again.", category="error")
-        else:
-            flash("User with this name does not exist.", category="error")
-        return render_template("auth/login.html", user=current_user, username=username)
-    
-    return render_template("auth/login.html", user=current_user)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=form.username.data).first()
+            login_user(user, remember=True)
+            flash("Logged in successfully!", category="success")
+            return redirect(url_for("pastebins.home"))
+
+    return render_template("auth/login.html", user=current_user, form=form)
 
 #Sign up view
 @bp.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
-    if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password1 = request.form.get("password1")
-        password2 = request.form.get("password2")
+    form = SignupForm()
 
-        if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
-            flash("User already exists.", category="error")
-        else:
-            new_user = User(username, email, password1)
-            if new_user.is_valid(password1, password2):
-                db.session.add(new_user)
-                db.session.commit()
-                login_user(new_user, remember=True)
-                flash("Account successfully created!", category="success")
-                return redirect(url_for("pastebins.home"))
+    if form.validate_on_submit():
+        new_user = User(form.username.data, form.email.data, form.password.data)
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user, remember=True)
+        flash("Account successfully created!", category="success")
+        return redirect(url_for("pastebins.home"))
             
-            return render_template("auth/sign_up.html", user=current_user, username=username, email=email)
-
-    return render_template("auth/sign_up.html", user=current_user)
+    return render_template("auth/sign_up.html", user=current_user, form=form)
 
 #Log out view
 @bp.route("/logout")

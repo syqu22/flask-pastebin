@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h3 class="display-5">Log In</h3>
 <form method="POST">
-    <h3 class="display-5">Log In</h3>
+    {{ form.csrf_token() }}
     <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="{{ username }}"/>
+        {{ form.username.label}}
+        {{ form.username(class_="form-control")}}
+        {% for error in form.username.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
     </div>
     <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" />
+        {{ form.password.label }}
+        {{ form.password(class_="form-control")}}
+        {% for error in form.password.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
     </div>
-    <button type="submit" class="btn btn-secondary mt-2">Submit</button>
+    <p>{{ form.submit(class_="btn btn-secondary mt-2") }}</p>
 </form>
 {% endblock %}

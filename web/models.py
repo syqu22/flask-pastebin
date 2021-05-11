@@ -8,8 +8,8 @@ import uuid
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True)
-    email = db.Column(db.String(150), unique=True)
+    username = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(150))
     pastebins = db.relationship("Pastebin")
 
@@ -29,25 +29,6 @@ class User(db.Model, UserMixin):
         Generate a new password hash and set it for user
         """
         self.password = generate_password_hash(password, method="sha256")
-
-    def is_valid(self, password1, password2):
-        """
-        Validate if user has correct data
-        """
-        if len(self.username) < 4:
-            flash("Username must be greater than 3 characters.", category="error")
-            return False
-        if len(self.email) < 4:
-            flash("Email must be greater than 3 characters.", category="error")
-            return False
-        if len(password1) < 5:
-            flash("Password must be at least 5 characters long.", category="error")
-            return False
-        if password1 != password2:
-            flash("Passwords are not the same.", category="error")
-            return False
-        else:
-            return True
 
 class Pastebin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -117,29 +98,3 @@ class Pastebin(db.Model):
             return dates.get(date)
         else:
             return None
-
-    def is_valid(self):
-        """
-        Validate if pastebin has correct data
-        """
-        types = {
-        "text", "bash", "c", "c#", "c++", "css", "go", "html", "http", "ini", "java", "js","json", "kotlin", 
-        "lua", "markdown", "objectivec", "perl", "php", "python", "r", "ruby", "rust", "sql", "swift", "typescript",
-        }
-
-        if self.content:
-            if self.title:
-                if len(self.title) > 150:
-                    flash("Title cannot exceed 150 characters limit.", category="error")
-                    return False
-            if len(self.content) > 6000000:
-                flash("Your pastebin cannot exceed 6000000 characters limit.", category="error")
-                return False
-            if self.paste_type not in types:
-                flash("The syntax type you have choosed does not exist.", category="error")
-                return False
-            else:
-                return True
-        else:
-            flash("Your pastebin must be at least 1 character long.", category="error")
-            return False
