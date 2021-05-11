@@ -6,45 +6,22 @@ from web.models import Pastebin
 from flask import request
 
 class CreatePastebinForm(FlaskForm):
-    types = {
-        "Text": "text",
-        "Bash": "bash", 
-        "C" : "c",
-        "C#": "c#",
-        "C++": "c++",
-        "CSS": "css",
-        "GO": "go",
-        "HTML": "html",
-        "HTTP": "http",
-        "INI": "ini",
-        "Java": "java",
-        "JavaScript": "js",
-        "JSON": "json",
-        "Kotlin": "kotlin",
-        "LUA": "lua",
-        "Markdown": "markdown",
-        "Objective-C": "objectivec",
-        "Perl": "perl",
-        "PHP": "php",
-        "Python": "python",
-        "R": "r",
-        "Ruby": "ruby",
-        "Rust": "rust",
-        "SQL": "sql",
-        "Swift": "swift",
-        "TypeScript": "typescript"
-    }
+    types = [
+        "Text","Bash", "C", "C#", "C++", "CSS", "GO", "HTML", "HTTP", "INI",
+        "Java", "JavaScript", "JSON", "Kotlin", "LUA", "Markdown", "Objective-C",
+        "Perl", "PHP", "Python", "R", "Ruby", "Rust", "SQL", "TypeScript"
+    ]
 
-    dates = {
-        "Never": None,
-        "1 Minute": "1min",
-        "15 Minutes": "15min",
-        "1 Hour": "hour",
-        "1 Day": "day",
-        "1 Week": "week",
-        "1 Month": "month", 
-        "1 Year": "year"
-    }
+    dates = [
+        "Never",
+        "1 Minute",
+        "15 Minutes",
+        "1 Hour",
+        "1 Day",
+        "1 Week",
+        "1 Month", 
+        "1 Year"
+    ]
 
     title = StringField("Title", default="Untitled", validators=[Length(max=100, message="Title needs to be at least %(min)d characters long and can't exceed %(max)d characters.")])
     content = TextAreaField("Paste", validators=[DataRequired(), Length(max=60000, message="Pastebin can't be longer than %(max)d characters.")])

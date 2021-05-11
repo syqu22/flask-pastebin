@@ -21,8 +21,9 @@ class LoginForm(FlaskForm):
         Check if password is correct for given username
         """
         user = User.query.filter_by(username=self.username.data).first()
-        if not user.check_password(self.password.data):
-            raise ValidationError(f"Wrong password.")
+        if user:
+            if not user.check_password(self.password.data):
+                raise ValidationError(f"Wrong password.")
     
 
 class SignupForm(FlaskForm):

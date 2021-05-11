@@ -2,16 +2,18 @@
 
 {% block content %}
 
-{% if (password )%}
+{% if password %}
 <form method="POST">
-    <h2>This pastebin is private, please enter the password</h2>
+    {{ form.csrf_token() }}
+    <h2 class="display-5">This pastebin is private, please enter the password</h2>
     <div class="form-group">
         {{ form.password.label}}
         {{ form.password(class_="form-control", placeholder="Enter password") }}
+        {% for error in form.password.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
     </div>
-    <div>
-        {{ form.submit(class_="btn btn-secondary mt-2") }}
-    </div>
+    {{ form.submit(class_="btn btn-secondary mt-2") }}
 </form>
 {% else %}
 

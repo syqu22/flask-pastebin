@@ -11,17 +11,17 @@ from web.pastebin.forms import CreatePastebinForm, PrivatePastebin
 @bp.route("/", methods=["GET", "POST"])
 def home():
    form = CreatePastebinForm()
+   print(form.syntax.data)
 
-   if request.method == "POST":
-      if form.validate_on_submit():
-         new_pastebin = Pastebin(form.title.data, form.content.data, form.syntax.data, current_user.get_id(), form.expire_date.data, form.password.data)
-         response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
-         if form.private.data and form.password.data :
-            response.set_cookie(new_pastebin.link, new_pastebin.password)
-            db.session.add(new_pastebin)
-            db.session.commit()
+   if request.method == "POST" and form.validate_on_submit():
+      new_pastebin = Pastebin(form.title.data, form.content.data, form.syntax.data.lower(), current_user.get_id(), form.expire.data, form.password.data)
+      response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
+      if form.private.data and form.password.data :
+         response.set_cookie(new_pastebin.link, new_pastebin.password)
+      db.session.add(new_pastebin)
+      db.session.commit()
 
-         flash("Pastebin added!", category="success")
+      flash("Pastebin added!", category="success")
       return response
          
    return render_template("home.html", user=current_user, form=form, public_pastebins=get_public_pastebins())
@@ -31,18 +31,24 @@ def pastebin(link: str):
    form = PrivatePastebin()
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
    password_cookie = request.cookies.get(link)
-   
-   if request.method == "POST":
-      if form.validate_on_submit():
-         response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin))
-         response.set_cookie(link, pastebin.password)
 
-         return response
-
-   if not pastebin.is_expired():
-      return render_template("pastebin.html", user=current_user, link=link, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0), form=form)
-   else:
+   if pastebin.is_expired():
       abort(404)
+
+   if password_cookie == pastebin.password:
+      response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0), form=form))
+   else:
+      response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0), form=form))
+
+   if request.method == "POST" and form.validate_on_submit():
+      if pastebin.check_password(form.password.data):
+         response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0), form=form))
+         response.set_cookie(link, pastebin.password)
+         return response
+      else:
+         ...
+         #TODO Move it to forms somehow
+   return response
 
 #View raw pastebin
 @bp.route("/raw/<link>")
