@@ -32,19 +32,19 @@ class User(db.Model, UserMixin):
 
 class Pastebin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(150), default="Untitled")
-    content = db.Column(db.String(6000000))
-    paste_type = db.Column(db.String(50))
+    title = db.Column(db.String(100), default="Untitled")
+    content = db.Column(db.String(60000))
+    syntax = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     date = db.Column(db.DateTime(timezone=True))
     expire_date = db.Column(db.DateTime(timezone=True))
     password = db.Column(db.String(150))
     link = db.Column(db.String(150), unique=True) 
 
-    def __init__(self, title: str, content: str, paste_type: str, user_id: id, expire_date: str, password: str):
+    def __init__(self, title: str, content: str, syntax: str, user_id: id, expire_date: str, password: str):
         self.title = title
         self.content = content
-        self.paste_type = paste_type
+        self.syntax = syntax
         self.user_id = user_id
         self.date = datetime.utcnow().replace(microsecond=0)
         self.expire_date = self.format_expire_date(expire_date)

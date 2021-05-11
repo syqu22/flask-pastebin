@@ -14,12 +14,11 @@ def login():
 
     form = LoginForm()
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            user = User.query.filter_by(username=form.username.data).first()
-            login_user(user, remember=True)
-            flash("Logged in successfully!", category="success")
-            return redirect(url_for("pastebins.home"))
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        login_user(user, remember=True)
+        flash("Logged in successfully!", category="success")
+        return redirect(url_for("pastebins.home"))
 
     return render_template("auth/login.html", user=current_user, form=form)
 

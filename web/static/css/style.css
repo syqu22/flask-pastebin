@@ -8,6 +8,10 @@ footer {
     width: 100%;
 }
 
+#content {
+    height:100%;
+}
+
 .navbar {
     background-color: #c1c5c9;
 }
@@ -26,8 +30,4 @@ footer {
 
 #footer {
     background-color: rgba(196, 186, 186, 0.2);
-}
-
-#create_pastebin_btn {
-    text-align: center;
 }

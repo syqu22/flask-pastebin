@@ -8,14 +8,18 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
-    #Check if user with this username exists
     def validate_username(self, username):
+        """
+        Check if user with this username exists
+        """
         user = User.query.filter_by(username=self.username.data).first()
         if not user:
             raise ValidationError(f"User with name {username.data} doesn't exists.")
 
-    #Check if password is correct for given username
     def validate_password(self, password):
+        """
+        Check if password is correct for given username
+        """
         user = User.query.filter_by(username=self.username.data).first()
         if not user.check_password(self.password.data):
             raise ValidationError(f"Wrong password.")
@@ -28,8 +32,10 @@ class SignupForm(FlaskForm):
     confirm_password = PasswordField("Confirm password", validators=[DataRequired(), EqualTo("password", message="Both passwords must be equal.")])
     submit = SubmitField("Submit")
     
-    #Check if user with this username already exists, then check for bad characters in username
     def validate_username(self, username):
+        """
+        Check if user with this username already exists, then check for bad characters in username
+        """
         user = User.query.filter_by(username=self.username.data).first()
         if user:
             raise ValidationError(f"User with name {username.data} already exists.")
@@ -39,8 +45,10 @@ class SignupForm(FlaskForm):
                 if char in excluded_chars:
                     raise ValidationError(f"Character {char} is not allowed in username.")
     
-    #Check if e-mail is already taken
     def validate_email(self, email):
+        """
+        Check if e-mail is already taken
+        """
         user = User.query.filter_by(email=self.email.data).first()
         if user:
             raise ValidationError(f"User already exists with this E-mail.")

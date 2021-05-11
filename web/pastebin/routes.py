@@ -6,28 +6,27 @@ from flask_login.utils import login_required
 from web.models import Pastebin
 from web.pastebin import bp
 from web import db
+from web.pastebin.forms import CreatePastebinForm
 
 @bp.route("/", methods=["GET", "POST"])
 def home():
-   if request.method == "POST":
-      title = request.form.get("title") or None
-      content = request.form.get("content")
-      paste_type = request.form.get("paste_type")
-      password = request.form.get("password") or None
-      expire_date = request.form.get("expire_date") or None
+   form = CreatePastebinForm()
+   #TODO
+   print(form.private.data)
+   print(form.expire.data)
+   
+   if form.validate_on_submit():
+      new_pastebin = Pastebin(form.title.data, form.content.data, form.syntax.data, current_user.get_id(), form.expire_date.data, form.password.data)
+      response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
+      if form.private.data and form.password.data :
+         response.set_cookie(new_pastebin.link, new_pastebin.password)
+      db.session.add(new_pastebin)
+      db.session.commit()
 
-      new_pastebin = Pastebin(title, content, paste_type, current_user.get_id(), expire_date, password)
-      if new_pastebin.is_valid():
-         response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
-         if password:
-            response.set_cookie(new_pastebin.link, new_pastebin.password)
-         db.session.add(new_pastebin)
-         db.session.commit()
-
-         flash("Pastebin added!", category="success")
-         return response
+      flash("Pastebin added!", category="success")
+      return response
          
-   return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
+   return render_template("home.html", user=current_user, form=form, public_pastebins=get_public_pastebins())
 
 @bp.route("/<link>", methods=["GET", "POST"])
 def pastebin(link: str):
