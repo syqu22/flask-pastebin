@@ -21,9 +21,6 @@
 
       {{ form.syntax.label}}
       {{ form.syntax(class_="form-select")}}
-      {% for error in form.syntax.errors %}
-      <span class="badge bg-warning text-dark">{{ error }}</span>
-      {% endfor %}
 
       {{ form.private.label }}
       {{ form.private(class_="form-check-input") }}
@@ -31,18 +28,13 @@
       {{ form.password(class_="form-control", disabled="", placeholder="Enter password") }}
 
       {{ form.expire.label }}
-      {{ form.expire(class_="form-check-input") }}
-      {% for error in form.expire.errors %}
-      <span class="badge bg-warning text-dark">{{ error }}</span>
-      {% endfor %}
-
-      {{ form.expire_date(class_="form-select", disabled="")}}
+      {{ form.expire(class_="form-select")}}
 
       {{ form.submit(class_="btn btn-secondary mt-2 mb-2") }}
     </form>
   </div>
   <div class="col mt-5">
-    <form class="d-flex mt-4" method="POST">
+    <form class="d-flex mt-4">
       <input class="form-control me-3" type="search" id="search_input" placeholder="Enter tag">
       <button class="btn btn-primary" type="button" id="search_button">Search</button>
     </form>
@@ -51,7 +43,7 @@
       {% for pastebin in public_pastebins %}
       <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
         <div class="d-flex w-100 justify-content-between">
-          <span class="badge bg-success">{{ pastebin.paste_type }}</span>
+          <span class="badge bg-success">{{ pastebin.syntax }}</span>
           <small>{{ pastebin.date.replace(microsecond=0) }}</small>
         </div>
         <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>

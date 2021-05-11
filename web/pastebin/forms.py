@@ -3,7 +3,7 @@ from wtforms import StringField, SelectField, SubmitField, TextAreaField, Boolea
 from wtforms import validators
 from wtforms.validators import DataRequired, Length, ValidationError
 from web.models import Pastebin
-
+from flask import request
 
 class CreatePastebinForm(FlaskForm):
     types = {
@@ -46,15 +46,14 @@ class CreatePastebinForm(FlaskForm):
         "1 Year": "year"
     }
 
-    title = StringField("Title", validators=[Length(min=2, max=100, message="Title needs to be at least %(min)d characters long and can't exceed %(max)d characters.")])
+    title = StringField("Title", default="Untitled", validators=[Length(max=100, message="Title needs to be at least %(min)d characters long and can't exceed %(max)d characters.")])
     content = TextAreaField("Paste", validators=[DataRequired(), Length(max=60000, message="Pastebin can't be longer than %(max)d characters.")])
     syntax = SelectField("Syntax type", choices=types, validators=[DataRequired()])
     private = BooleanField("Private")
     password = StringField()
-    expire = BooleanField("Expiration")
-    expire_date = SelectField(choices=dates, validators=[DataRequired()])
+    expire = SelectField("Expiration", choices=dates, validators=[DataRequired()])
     submit = SubmitField("Create")
 
-    
-
-    
+class PrivatePastebin(FlaskForm):
+    password = StringField("Password", validators=[DataRequired()])
+    submit = SubmitField("Enter")

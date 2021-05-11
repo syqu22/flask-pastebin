@@ -85,13 +85,13 @@ class Pastebin(db.Model):
         """
         dates = {
             "test":  self.date,
-            "1min":  self.date + relativedelta(minutes=+1),
-            "15min": self.date + relativedelta(minutes=+15),
-            "hour":  self.date + relativedelta(hours=+1),
-            "day":   self.date + relativedelta(days=+1),
-            "week":  self.date + relativedelta(weeks=+1),
-            "month": self.date + relativedelta(months=+1),
-            "year":  self.date + relativedelta(years=+1)
+            "1 min":  self.date + relativedelta(minutes=+1),
+            "15 min": self.date + relativedelta(minutes=+15),
+            "1 hour":  self.date + relativedelta(hours=+1),
+            "1 day":   self.date + relativedelta(days=+1),
+            "1 week":  self.date + relativedelta(weeks=+1),
+            "1 month": self.date + relativedelta(months=+1),
+            "1 year":  self.date + relativedelta(years=+1)
         }
 
         if date in dates:
