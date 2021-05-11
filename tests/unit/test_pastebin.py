@@ -1,7 +1,7 @@
 """
 This file contains the unit tests for the pastebin model
 """
-from web.models.pastebin import Pastebin
+from web.models import Pastebin
 from datetime import datetime
 
 def test_new_pastebin(new_pastebin):

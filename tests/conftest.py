@@ -1,7 +1,6 @@
 import pytest
 
-from web.models.user import User
-from web.models.pastebin import Pastebin
+from web.models import User, Pastebin
 from web import create_app, db
 
 DB_NAME = "test_database.db"

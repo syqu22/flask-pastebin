@@ -1,7 +1,7 @@
 """
-This file contains the functional tests for the pastebin_view blueprint.
+This file contains the functional tests for the pastebin blueprint.
 """
-from web.models.pastebin import Pastebin
+from web.models import Pastebin
 
 
 def test_home_page_with(test_client, init_database):
