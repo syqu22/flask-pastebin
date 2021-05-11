@@ -1,11 +1,9 @@
-from flask import Blueprint, render_template
+from flask import render_template
 from flask_login.utils import current_user
-from web.models.pastebin import Pastebin
+from web.models import Pastebin
+from web.search import bp
 
-
-search_view = Blueprint("search_view", __name__)
-
-@search_view.route("/search/<text>")
+@bp.route("/search/<text>")
 def search(text: str):
     #TODO
     pastebins = Pastebin.query.filter(Pastebin.paste_type.like("%" + text + "%"))

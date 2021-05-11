@@ -1,14 +1,13 @@
 from datetime import datetime
-from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
+from flask import render_template, request, flash, redirect, url_for, abort
 from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
-from web.models.pastebin import Pastebin
+from web.models import Pastebin
+from web.pastebin import bp
 from web import db
 
-pastebin_view = Blueprint("pastebin_view", __name__)
-
-@pastebin_view.route("/", methods=["GET", "POST"])
+@bp.route("/", methods=["GET", "POST"])
 def home():
    if request.method == "POST":
       title = request.form.get("title") or None
@@ -19,7 +18,7 @@ def home():
 
       new_pastebin = Pastebin(title, content, paste_type, current_user.get_id(), expire_date, password)
       if new_pastebin.is_valid():
-         response = make_response(redirect(url_for("pastebin_view.pastebin", link=new_pastebin.link)))
+         response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
          if password:
             response.set_cookie(new_pastebin.link, new_pastebin.password)
          db.session.add(new_pastebin)
@@ -30,7 +29,7 @@ def home():
          
    return render_template("home.html", user=current_user, public_pastebins=get_public_pastebins())
 
-@pastebin_view.route("/<link>", methods=["GET", "POST"])
+@bp.route("/<link>", methods=["GET", "POST"])
 def pastebin(link: str):
    if request.method == "GET":
       pastebin = Pastebin.query.filter_by(link=link).first_or_404()
@@ -62,10 +61,10 @@ def pastebin(link: str):
          return response
       else:
          flash("Password is incorrect!", category="error")
-         return redirect(url_for("pastebin_view.pastebin", link=link))
+         return redirect(url_for("pastebins.pastebin", link=link))
 
 #View raw pastebin
-@pastebin_view.route("/raw/<link>")
+@bp.route("/raw/<link>")
 def raw_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
    password_cookie = request.cookies.get(link)
@@ -85,7 +84,7 @@ def raw_pastebin(link: str):
       abort(404)
 
 #Download pastebin
-@pastebin_view.route("/download/<link>")
+@bp.route("/download/<link>")
 def download_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
    password_cookie = request.cookies.get(link)
@@ -107,7 +106,7 @@ def download_pastebin(link: str):
 
 #Delete pastebin (Only user can remove his own pastebin)
 @login_required
-@pastebin_view.route("/delete/<link>")
+@bp.route("/delete/<link>")
 def delete_pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
 
@@ -116,7 +115,7 @@ def delete_pastebin(link: str):
          db.session.delete(pastebin)
          db.session.commit()
          flash("Sucessfully removed pastebin.", category="success")
-         return redirect(url_for("user_view.user"))
+         return redirect(url_for("users.user"))
       else:
          abort(403)
    else:

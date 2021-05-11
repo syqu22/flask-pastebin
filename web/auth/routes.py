@@ -1,16 +1,15 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-from web.models.user import User
+from flask import render_template, request, flash, redirect, url_for
+from web.models import User
 from web import db
 from flask_login import login_user, login_required, logout_user, current_user
-
-auth_view = Blueprint("auth_view", __name__)
+from web.auth import bp
 
 #Login view
-@auth_view.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         flash("You are already logged in.", category="error")
-        return redirect(url_for("pastebin_view.home"))
+        return redirect(url_for("pastebins.home"))
 
     if request.method == "POST":
         username = request.form.get("username")
@@ -22,17 +21,17 @@ def login():
             if user.check_password(password):
                 flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for("pastebin_view.home"))
+                return redirect(url_for("pastebins.home"))
             else:
                 flash("Incorrect password, try again.", category="error")
         else:
             flash("User with this name does not exist.", category="error")
-        return render_template("login.html", user=current_user, username=username)
+        return render_template("auth/login.html", user=current_user, username=username)
     
-    return render_template("login.html", user=current_user)
+    return render_template("auth/login.html", user=current_user)
 
 #Sign up view
-@auth_view.route("/sign-up", methods=["GET", "POST"])
+@bp.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
         username = request.form.get("username")
@@ -49,15 +48,15 @@ def sign_up():
                 db.session.commit()
                 login_user(new_user, remember=True)
                 flash("Account successfully created!", category="success")
-                return redirect(url_for("pastebin_view.home"))
+                return redirect(url_for("pastebins.home"))
             
-            return render_template("sign_up.html", user=current_user, username=username, email=email)
+            return render_template("auth/sign_up.html", user=current_user, username=username, email=email)
 
-    return render_template("sign_up.html", user=current_user)
+    return render_template("auth/sign_up.html", user=current_user)
 
 #Log out view
-@auth_view.route("/logout")
+@bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("auth_view.login"))
+    return redirect(url_for("auth.login"))

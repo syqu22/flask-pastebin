@@ -10,8 +10,7 @@ db = SQLAlchemy()
 DB_NAME = "database.db"
 
 def create_app():
-    from web.models.user import User
-    from web.models.pastebin import Pastebin
+    from web.models import User, Pastebin
 
     app = Flask(__name__)
     #Config of the flask app
@@ -29,24 +28,24 @@ def create_app():
 
     db.init_app(app)
 
-    from web.blueprints import pastebin_view
-    from web.blueprints import auth_view
-    from web.blueprints import user_view
-    from web.blueprints import search_view
-    from web.blueprints import error_view
+    from web import pastebin
+    from web import auth
+    from web import user
+    from web import search
+    from web import errors
 
     #Register urls
-    app.register_blueprint(pastebin_view.pastebin_view, url_prefix="/")
-    app.register_blueprint(auth_view.auth_view, url_prefix="/")
-    app.register_blueprint(user_view.user_view, url_prefix="/")
-    app.register_blueprint(search_view.search_view, url_prefix="/")
-    app.register_blueprint(error_view.error_view, url_prefix="/")
+    app.register_blueprint(pastebin.bp)
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(user.bp)
+    app.register_blueprint(search.bp)
+    app.register_blueprint(errors.bp)
 
     create_database(app)
     
     #Set up login manager
     login_manager = LoginManager()
-    login_manager.login_view = "auth_view.login"
+    login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader

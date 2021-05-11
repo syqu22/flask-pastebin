@@ -1,18 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for
 from flask_login import current_user
 from flask_login.utils import login_required,login_user, current_user
-from web.models.user import User
-
+from web.models import User
+from web.user import bp
 from web import db
 
-user_view = Blueprint("user_view", __name__)
-
-@user_view.route("/user")
+@bp.route("/user")
 @login_required
 def user():
-   return render_template("user.html", user=current_user)
+   return render_template("user/user.html", user=current_user)
 
-@user_view.route("/user/edit", methods=["GET", "POST"])
+@bp.route("/user/edit", methods=["GET", "POST"])
 @login_required
 def edit_user():
    if request.method == "POST":
@@ -31,7 +29,7 @@ def edit_user():
          db.session.commit()
 
          login_user(user, remember=True)
-         return redirect(url_for("user_view.user"))
-      return render_template("user_edit.html", user=current_user, username=username, email=email)
+         return redirect(url_for("users.user"))
+      return render_template("user/user_edit.html", user=current_user, username=username, email=email)
 
-   return render_template("user_edit.html", user=current_user)
+   return render_template("user/user_edit.html", user=current_user)
