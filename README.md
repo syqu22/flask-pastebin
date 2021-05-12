@@ -75,7 +75,7 @@ thanks to Flask-Admin, where you can have access to database from the website
 
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
-| `page` | `string` | Used to paginate (one page returns maximum of 50 users)|
+| `page` | `int` | Used to paginate (one page returns maximum of 50 users)|
 
 
 #### Get pastebins of user
