@@ -37,6 +37,9 @@
 
     {% if user.id == pastebin.user_id %}
 
+<form class="pastebin_button_form" action="/edit/{{ pastebin.link }}">
+    <button class="btn btn-primary">Edit</button>
+</form>
 <form class="pastebin_button_form" action="/delete/{{ pastebin.link }}">
     <button class="btn btn-danger">Delete</button>
 </form>

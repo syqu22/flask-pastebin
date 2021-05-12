@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-9">
+      <form method="POST">
+        {{ form.csrf_token() }}
+        <h2 class="display-5">Editing Pastebin</h2>
+        <div class="form-group">
+          {{ form.title.label}}
+          {{ form.title(class_="form-control", placeholder="Untitled", value=pastebin.title) }}
+          {% for error in form.title.errors %}
+          <span class="badge bg-warning text-dark">{{ error }}</span>
+          {% endfor %}
+        </div>
+  
+        {{ form.content.label }}
+        {{ form.content(class_="form-control", cols="35", rows="20", value=pastebin.content) }}
+        {% for error in form.content.errors %}
+        <span class="badge bg-warning text-dark">{{ error }}</span>
+        {% endfor %}
+  
+        {{ form.syntax.label}}
+        {{ form.syntax(class_="form-select", value=pastebin.syntax)}}
+  
+        {{ form.private.label }}
+        {{ form.private(class_="form-check-input", value=pastebin.private) }}
+  
+        {{ form.password(class_="form-control", disabled="", placeholder="Enter password", value=pastebin.password) }}
+  
+        {{ form.expire.label }}
+        {{ form.expire(class_="form-select", value=pastebin.expire_date)}}
+  
+        {{ form.submit(class_="btn btn-secondary mt-2 mb-2") }}
+  
+      </form>
+    </div>
+</div>
+
+{% endblock %}

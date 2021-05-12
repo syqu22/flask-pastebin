@@ -13,7 +13,7 @@ def home():
    form = CreatePastebinForm()
 
    if request.method == "POST" and form.validate_on_submit():
-      new_pastebin = Pastebin(title=form.title.data, content=form.content.data, syntax=form.syntax.data.lower(), user_id=current_user.get_id(), expire_date=form.expire.data, password=form.password.data)
+      new_pastebin = Pastebin(title=form.title.data, content=form.content.data, syntax=form.syntax.data.lower(), user_id=current_user.get_id(), expire_date=form.expire.data.lower(), password=form.password.data)
       response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
       if form.private.data and form.password.data :
          response.set_cookie(new_pastebin.link, new_pastebin.password)
@@ -27,9 +27,9 @@ def home():
 
 @bp.route("/<link>", methods=["GET", "POST"])
 def pastebin(link: str):
-   form = PrivatePastebin()
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
    password_cookie = request.cookies.get(link)
+   form = PrivatePastebin()
 
    #If pastebin expire_date is past current date delete it from db and return 404 error
    if pastebin.is_expired():
@@ -104,6 +104,32 @@ def delete_pastebin(link: str):
          db.session.commit()
          flash("Sucessfully removed pastebin.", category="success")
          return redirect(url_for("users.user"))
+      else:
+         abort(403)
+   else:
+      abort(404)
+
+#Edit pastebin (Only by pastebin owner)
+@login_required
+@bp.route("/edit/<link>", methods=["GET", "POST"])
+def edit_pastebin(link: str):
+   pastebin = Pastebin.query.filter_by(link=link).first_or_404()
+   form = CreatePastebinForm()
+
+   if request.method == "POST" and form.validate_on_submit():
+      pastebin.title = form.title.data
+      pastebin.content = form.content.data
+      pastebin.syntax = form.syntax.data
+      pastebin.set_password(form.password.data)
+      pastebin.format_expire_date(form.expire.data)
+      db.session.commit()
+      #TODO fix password, content not showing and expire data default
+
+      return redirect(url_for("pastebins.pastebin", link=pastebin.link))
+      
+   if not pastebin.is_expired():
+      if pastebin.user_id and str(pastebin.user_id) == current_user.get_id():
+         return render_template("pastebin_edit.html", user=current_user, pastebin=pastebin, form=form)
       else:
          abort(403)
    else:

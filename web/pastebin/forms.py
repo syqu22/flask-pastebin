@@ -25,7 +25,7 @@ class CreatePastebinForm(FlaskForm):
     syntax = SelectField("Syntax type", choices=types, validators=[DataRequired()])
     private = BooleanField("Private")
     password = StringField()
-    expire = SelectField("Expiration", choices=dates, validators=[DataRequired()])
+    expire = SelectField("Expiration", choices=dates)
     submit = SubmitField("Create")
 
     def validate_title(self, title):
