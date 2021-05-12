@@ -9,7 +9,7 @@
       {{ form.csrf_token() }}
       <div class="form-group mt-5">
         {{ form.title.label}}
-        {{ form.title(class_="form-control")}}
+        {{ form.title(class_="form-control", placeholder="Untitled")}}
         {% for error in form.title.errors %}
         <span class="badge bg-warning text-dark">{{ error }}</span>
         {% endfor %}
@@ -37,12 +37,8 @@
     </form>
   </div>
   <div class="col mt-5">
-    <form class="d-flex mt-4">
-      <input class="form-control me-3" type="search" id="search_input" placeholder="Enter tag">
-      <button class="btn btn-primary" type="button" id="search_button">Search</button>
-    </form>
     <div class="list-group mt-4">
-      <p class="lead">Last public pastebins:</p>
+      <a href="/public?page=1"><p class="lead fs-3">Last public pastebins:</a></p>
 
       {% for pastebin in public_pastebins %}
 
@@ -60,5 +56,4 @@
   </div>
 </div>
 <script type="text/javascript" src="{{ url_for('static',filename='js/pastebin_checkbox.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/search_bar.js') }}"></script>
 {% endblock %}

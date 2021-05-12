@@ -31,7 +31,7 @@ def pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
    password_cookie = request.cookies.get(link)
 
-   #If pastebin expire_date is past current date delete it from db
+   #If pastebin expire_date is past current date delete it from db and return 404 error
    if pastebin.is_expired():
       abort(404)
 

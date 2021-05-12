@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, TextAreaField, BooleanField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length, ValidationError, Optional
 
 class CreatePastebinForm(FlaskForm):
     types = [
@@ -20,7 +20,7 @@ class CreatePastebinForm(FlaskForm):
         "1 Year"
     ]
 
-    title = StringField("Title", default="Untitled", validators=[Length(max=100, message="Title needs to be at least %(min)d characters long and can't exceed %(max)d characters.")])
+    title = StringField("Title", validators=[Optional(), Length(max=100, message="Title can't exceed %(max)d characters.")], filters= [lambda x: x or None])
     content = TextAreaField("Paste", validators=[DataRequired(), Length(max=60000, message="Pastebin can't be longer than %(max)d characters.")])
     syntax = SelectField("Syntax type", choices=types, validators=[DataRequired()])
     private = BooleanField("Private")

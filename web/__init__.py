@@ -31,14 +31,14 @@ def create_app():
     from web import pastebin
     from web import auth
     from web import user
-    from web import search
+    from web import public_pastebins
     from web import errors
 
     #Register urls
     app.register_blueprint(pastebin.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(user.bp)
-    app.register_blueprint(search.bp)
+    app.register_blueprint(public_pastebins.bp)
     app.register_blueprint(errors.bp)
 
     create_database(app)
