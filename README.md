@@ -9,7 +9,7 @@ Technology I have used:
 - Flask-SQLAlchemy for Database functionality
 - Flask-Login for user authentication
 - Pytest for testing
-- Jinja2 + Boostrap 5 for Templates
+- Jinja2 + Bootstrap 5 for Templates
 
 While there are tests most of them are not working since
  I've implemented Flask-WTF and most of the data validation
