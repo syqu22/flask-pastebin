@@ -37,8 +37,8 @@ def init_database(test_client):
     user1 = User("user1", "testing@user1.com", "password")
     user2 = User("user2", "testing@user2.com", "password")
 
-    pastebin1 = Pastebin(title="test title 1", content="test content 1", syntax="text", user_id=None, expire_date=None, password=None)
-    pastebin2 = Pastebin(title="test title 2", content="test content 2", syntax="css", user_id=1, expire_date=None, password="password")
+    pastebin1 = Pastebin(title="test title 1", content="test content 1", syntax="text", user_id=1, expire_date=None, password=None)
+    pastebin2 = Pastebin(title="test title 2", content="test content 2", syntax="css", user_id=2, expire_date=None, password="password")
 
     db.session.add(user1)
     db.session.add(user2)
