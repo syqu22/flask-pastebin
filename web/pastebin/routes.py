@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import render_template, request, flash, redirect, url_for, abort
-from flask.helpers import make_response
+from flask.helpers import make_response, send_file
 from flask_login import current_user
 from flask_login.utils import login_required
 from web.models import Pastebin
