@@ -33,6 +33,7 @@ def create_app():
     from web import user
     from web import public_pastebins
     from web import errors
+    from web import api
 
     #Register urls
     app.register_blueprint(pastebin.bp)
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(user.bp)
     app.register_blueprint(public_pastebins.bp)
     app.register_blueprint(errors.bp)
+    app.register_blueprint(api.bp, url_prefix="/api")
 
     create_database(app)
     

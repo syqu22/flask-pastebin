@@ -33,6 +33,17 @@ class User(db.Model, UserMixin):
         """
         self.password = generate_password_hash(password, method="sha256")
 
+    def to_dict(self):
+        """
+        Generate a new dict/object based on user data
+        """
+        data = {
+            "id": self.id,
+            "_username": self.username,
+        }
+        
+        return data
+
 class Pastebin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), default="Untitled")
@@ -91,8 +102,8 @@ class Pastebin(db.Model):
         """
         dates = {
             "test":  self.date,
-            "1 min":  self.date + relativedelta(minutes=+1),
-            "15 min": self.date + relativedelta(minutes=+15),
+            "1 minute":  self.date + relativedelta(minutes=+1),
+            "15 minutes": self.date + relativedelta(minutes=+15),
             "1 hour":  self.date + relativedelta(hours=+1),
             "1 day":   self.date + relativedelta(days=+1),
             "1 week":  self.date + relativedelta(weeks=+1),
@@ -104,3 +115,26 @@ class Pastebin(db.Model):
             return dates.get(date)
         else:
             return None
+
+    def to_dict(self):
+        """
+        Generate a new dict/object based on user data
+        """
+        if not self.is_expired():
+            if not self.password:
+                data = {
+                    "id": self.id,
+                    "_title": self.title,
+                    "content": self.content,
+                    "syntax": self.syntax,
+                    "date": self.date,
+                    "expire_date": self.expire_date,
+                    "link": self.link
+                }
+                return data
+            else:
+                return {
+                    "id": self.id,
+                    "password": "private",
+                    "link": self.link,
+                    }
