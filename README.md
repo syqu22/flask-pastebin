@@ -28,15 +28,20 @@ While there are tests most of them are not working since
   
 ## Screenshots
 
-![Home Page](https://github.com/syqu22/flask-pastebin/blob/main/web/static/01.png)
-![Pastebin Page](https://github.com/syqu22/flask-pastebin/blob/main/web/static/02.png)
-![User Page](https://github.com/syqu22/flask-pastebin/blob/main/web/static/03.png)
-![Public Pastebins Page](https://github.com/syqu22/flask-pastebin/blob/main/web/static/04.png)
+<img src="https://github.com/syqu22/flask-pastebin/blob/main/web/static/01.png" height=50% width=60%>
+<img src="https://github.com/syqu22/flask-pastebin/blob/main/web/static/02.png" height=50% width=60%>
+<img src="https://github.com/syqu22/flask-pastebin/blob/main/web/static/03.png" height=50% width=60%>
+<img src="https://github.com/syqu22/flask-pastebin/blob/main/web/static/04.png" height=50% width=60%>
 
   
 ## Installation 
 
-Install all required libraries  through:
+First clone the repository to use it localy:
+```sh
+$ git clone https://github.com/syqu22/flask-pastebin.git
+```
+
+Then install all required libraries  through:
 
 ```bash 
   pip install -r requirements.txt
