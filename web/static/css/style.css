@@ -27,3 +27,9 @@ footer {
 #footer {
     background-color: rgba(196, 186, 186, 0.2);
 }
+
+.hljs-ln-numbers {
+    text-align: center;
+    color: #ccc;
+    border-right: 1px solid #CCC;
+}

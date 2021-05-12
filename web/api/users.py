@@ -1,5 +1,4 @@
 from flask import jsonify, request
-from werkzeug.exceptions import abort
 from web.models import User
 from web.api import bp
 

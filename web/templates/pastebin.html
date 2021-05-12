@@ -35,6 +35,10 @@
     <button id="download" class="btn btn-primary">Download</button>
 </form>
 
+<div class="row mt-5 ">
+    <p class="lead fs-3">RAW Data</p>
+    <textarea rows=10> {{ pastebin.content }}</textarea>
+</div>
     {% if user.id == pastebin.user_id %}
 
 <form class="pastebin_button_form" action="/delete/{{ pastebin.link }}">
@@ -48,7 +52,11 @@
 <script type="text/javascript" src="{{ url_for('static',filename='js/copy_all.js') }}"></script>
 <!-- highlight.js -->
 <script src="//unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
+<!-- highlight-line-numbers.js-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+
 <script>
-    hljs.highlightAll();
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
 </script>
 {% endblock %}

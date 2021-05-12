@@ -1,9 +1,8 @@
-from typing import Pattern
 from flask import jsonify, request
 from web.models import Pastebin
 from web.api import bp
 
-@bp.route("/pastebin/<int:id>", methods=["GET"])
+@bp.route("/pastebins/<int:id>", methods=["GET"])
 def get_pastebin(id):
     """
     Returns pastebin with given id

@@ -10,7 +10,7 @@ def public():
     tags = dict()
 
     #Get last 50 pastebins
-    pastebins = Pastebin.query.filter_by(password=None).limit(50).from_self().order_by(desc(Pastebin.date))
+    pastebins = Pastebin.query.order_by(desc(Pastebin.date)).filter_by(password=None).limit(50).from_self()
 
     for pastebin in pastebins:
         pastebin.is_expired()  

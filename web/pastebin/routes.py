@@ -1,6 +1,7 @@
 from datetime import datetime
+from sqlalchemy import desc
 from flask import render_template, request, flash, redirect, url_for, abort
-from flask.helpers import make_response, send_file
+from flask.helpers import make_response
 from flask_login import current_user
 from flask_login.utils import login_required
 from web.models import Pastebin
@@ -113,7 +114,7 @@ def get_public_pastebins():
    """
    Get last 10 pastebins that are not private
    """
-   pastebins = Pastebin.query.filter_by(password=None).all()[-10:]
+   pastebins = Pastebin.query.order_by(desc(Pastebin.date)).filter_by(password=None).limit(10).from_self()
    for pastebin in pastebins:
       pastebin.is_expired()
    return pastebins

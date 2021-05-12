@@ -32,7 +32,7 @@ class CreatePastebinForm(FlaskForm):
         """
         Check if user with this username already exists, then check for bad characters in username
         """
-        excluded_chars = " *?!'^+%&/()=}][{$#"
+        excluded_chars = "*?!'^+%&/()=}][{$#"
         for char in title.data:
             if char in excluded_chars:
                 raise ValidationError(f"Character {char} is not allowed in title.")

@@ -7,7 +7,7 @@
     <form method="POST">
 
       {{ form.csrf_token() }}
-      <div class="form-group mt-5">
+      <div class="form-group mt-3">
         {{ form.title.label}}
         {{ form.title(class_="form-control", placeholder="Untitled")}}
         {% for error in form.title.errors %}
@@ -36,9 +36,9 @@
 
     </form>
   </div>
-  <div class="col mt-5">
-    <div class="list-group mt-4">
-      <a href="/public?page=1"><p class="lead fs-3">Last public pastebins:</a></p>
+  <div class="col mt-3">
+    <div class="list-group mt-2">
+      <a href="/public?page=1"><p class="lead fs-3">Latest public pastebins:</a></p>
 
       {% for pastebin in public_pastebins %}
 
@@ -47,7 +47,7 @@
           <span class="badge bg-success">{{ pastebin.syntax }}</span>
           <small>{{ pastebin.date.replace(microsecond=0) }}</small>
         </div>
-        <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>
+        <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 15 else pastebin.title[:15] + "..."}}</b></p>
       </a>
 
       {% endfor %}
