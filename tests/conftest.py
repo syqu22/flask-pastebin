@@ -14,7 +14,7 @@ def new_user():
 @pytest.fixture
 def new_pastebin():
     password = "password"
-    pastebin = Pastebin("test title", "test content", "text", None, None, password)
+    pastebin = Pastebin(title="test title", content="test content", syntax="text", user_id=None, expire_date=None, password=password)
     return pastebin
 
 
@@ -24,6 +24,7 @@ def test_client():
     flask_app.config["TESTING"] = True
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///db/{DB_NAME}"
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
+    #flask_app.config["WTF_CSRF_ENABLED"] = False
 
     with flask_app.test_client() as testing_client:
         with flask_app.app_context():
@@ -36,8 +37,8 @@ def init_database(test_client):
     user1 = User("user1", "testing@user1.com", "password")
     user2 = User("user2", "testing@user2.com", "password")
 
-    pastebin1 = Pastebin("test title 1", "test content 1", "text", None, None, None)
-    pastebin2 = Pastebin("test title 2", "test content 2", "css", 1, None, "password")
+    pastebin1 = Pastebin(title="test title 1", content="test content 1", syntax="text", user_id=None, expire_date=None, password=None)
+    pastebin2 = Pastebin(title="test title 2", content="test content 2", syntax="css", user_id=1, expire_date=None, password="password")
 
     db.session.add(user1)
     db.session.add(user2)

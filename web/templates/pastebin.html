@@ -3,26 +3,29 @@
 {% block content %}
 
 {% if password %}
+
 <form method="POST">
-    {{ form.csrf_token() }}
+{{ form.csrf_token() }}
     <h2 class="display-5">This pastebin is private, please enter the password</h2>
     <div class="form-group">
-        {{ form.password.label}}
-        {{ form.password(class_="form-control", placeholder="Enter password") }}
-        {% for error in form.password.errors %}
-        <span class="badge bg-warning text-dark">{{ error }}</span>
-        {% endfor %}
+    {{ form.password.label}}
+    {{ form.password(class_="form-control", placeholder="Enter password") }}
     </div>
-    {{ form.submit(class_="btn btn-secondary mt-2") }}
+{{ form.submit(class_="btn btn-secondary mt-2") }}
 </form>
+
 {% else %}
 
 <h1 class="display-5 text-break">Name: {{ pastebin.title }} </h1>
 <span class="badge bg-success">{{ pastebin.syntax }}</span>
 <small>Created on: {{ pastebin.date }}</small>
+
 {% if pastebin.expire_date %}
+
 <small id="expire_date_info">This pastebin will expire in: {{ pastebin.expire_date - time }}</small>
+
 {% endif %}
+
 <pre class="mt-2"><code class= "{{ pastebin.syntax }}" id="pastebin">{{ pastebin.content }}</code></pre>
 <button id="copy-all" class="btn btn-primary">Copy all</button>
 <form class="pastebin_button_form" action="/raw/{{ pastebin.link }}">
@@ -31,13 +34,18 @@
 <form class="pastebin_button_form" action="/download/{{ pastebin.link }}">
     <button id="download" class="btn btn-primary">Download</button>
 </form>
-{% if user.id == pastebin.user_id %}
+
+    {% if user.id == pastebin.user_id %}
+
 <form class="pastebin_button_form" action="/delete/{{ pastebin.link }}">
     <button class="btn btn-danger">Delete</button>
 </form>
+
+    {% endif %}
+    
 {% endif %}
+
 <script type="text/javascript" src="{{ url_for('static',filename='js/copy_all.js') }}"></script>
-{% endif %}
 <!-- highlight.js -->
 <script src="//unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
 <script>

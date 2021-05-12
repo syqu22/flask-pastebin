@@ -1,9 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, TextAreaField, BooleanField
-from wtforms import validators
 from wtforms.validators import DataRequired, Length, ValidationError
-from web.models import Pastebin
-from flask import request
 
 class CreatePastebinForm(FlaskForm):
     types = [
@@ -30,6 +27,15 @@ class CreatePastebinForm(FlaskForm):
     password = StringField()
     expire = SelectField("Expiration", choices=dates, validators=[DataRequired()])
     submit = SubmitField("Create")
+
+    def validate_title(self, title):
+        """
+        Check if user with this username already exists, then check for bad characters in username
+        """
+        excluded_chars = " *?!'^+%&/()=}][{$#"
+        for char in title.data:
+            if char in excluded_chars:
+                raise ValidationError(f"Character {char} is not allowed in title.")
 
 class PrivatePastebin(FlaskForm):
     password = StringField("Password", validators=[DataRequired()])

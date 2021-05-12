@@ -12,7 +12,7 @@ def test_new_user_with_fixture(new_user):
     assert new_user.check_password("password")
     assert new_user.is_authenticated
     assert new_user.is_active
-    assert new_user.is_valid("password", "password")
+    assert new_user.check_password("password")
     assert not new_user.is_anonymous
 
 

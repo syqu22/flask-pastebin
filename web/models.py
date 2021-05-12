@@ -13,6 +13,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     pastebins = db.relationship("Pastebin")
 
+    def __repr__(self):
+        return f"User: {self.id}, username: {self.username}, email={self.email}"
+
     def __init__(self, username: str, email: str, password: str):
         self.username = username
         self.email = email
@@ -51,6 +54,9 @@ class Pastebin(db.Model):
         self.link = str(uuid.uuid4())[:8]
         if password:
             self.set_password(password)
+
+    def __repr__(self):
+        return f"Pastebin {self.id}, title: {self.title}, syntax: {self.syntax}, user_id: {self.user_id}, date: {self.date}, expire_date {self.expire_date}"
 
     def is_expired(self):
         """

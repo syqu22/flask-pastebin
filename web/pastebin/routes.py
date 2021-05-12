@@ -11,10 +11,9 @@ from web.pastebin.forms import CreatePastebinForm, PrivatePastebin
 @bp.route("/", methods=["GET", "POST"])
 def home():
    form = CreatePastebinForm()
-   print(form.syntax.data)
 
    if request.method == "POST" and form.validate_on_submit():
-      new_pastebin = Pastebin(form.title.data, form.content.data, form.syntax.data.lower(), current_user.get_id(), form.expire.data, form.password.data)
+      new_pastebin = Pastebin(title=form.title.data, content=form.content.data, syntax=form.syntax.data.lower(), user_id=current_user.get_id(), expire_date=form.expire.data, password=form.password.data)
       response = make_response(redirect(url_for("pastebins.pastebin", link=new_pastebin.link)))
       if form.private.data and form.password.data :
          response.set_cookie(new_pastebin.link, new_pastebin.password)
@@ -32,13 +31,9 @@ def pastebin(link: str):
    pastebin = Pastebin.query.filter_by(link=link).first_or_404()
    password_cookie = request.cookies.get(link)
 
+   #If pastebin expire_date is past current date delete it from db
    if pastebin.is_expired():
       abort(404)
-
-   if password_cookie == pastebin.password:
-      response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0), form=form))
-   else:
-      response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0), form=form))
 
    if request.method == "POST" and form.validate_on_submit():
       if pastebin.check_password(form.password.data):
@@ -46,8 +41,14 @@ def pastebin(link: str):
          response.set_cookie(link, pastebin.password)
          return response
       else:
-         ...
-         #TODO Move it to forms somehow
+         flash("Wrong password.", category="error")
+
+   #If password in cookie is equal to pastebin's password, return render without password attribute else render with password
+   if password_cookie == pastebin.password:
+      response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, time=datetime.utcnow().replace(microsecond=0), form=form))
+   else:
+      response = make_response(render_template("pastebin.html", user=current_user, pastebin=pastebin, password=pastebin.password, time=datetime.utcnow().replace(microsecond=0), form=form))
+   
    return response
 
 #View raw pastebin

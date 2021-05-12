@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block content%}
+
 <div class="row">
   <div class="col-9">
     <form method="POST">
+
       {{ form.csrf_token() }}
       <div class="form-group mt-5">
         {{ form.title.label}}
@@ -31,6 +33,7 @@
       {{ form.expire(class_="form-select")}}
 
       {{ form.submit(class_="btn btn-secondary mt-2 mb-2") }}
+
     </form>
   </div>
   <div class="col mt-5">
@@ -40,7 +43,9 @@
     </form>
     <div class="list-group mt-4">
       <p class="lead">Last public pastebins:</p>
+
       {% for pastebin in public_pastebins %}
+
       <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
         <div class="d-flex w-100 justify-content-between">
           <span class="badge bg-success">{{ pastebin.syntax }}</span>
@@ -48,7 +53,9 @@
         </div>
         <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>
       </a>
+
       {% endfor %}
+      
     </div>
   </div>
 </div>

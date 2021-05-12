@@ -3,7 +3,6 @@ This file contains the functional tests for the pastebin blueprint.
 """
 from web.models import Pastebin
 
-
 def test_home_page_with(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
@@ -19,7 +18,7 @@ def test_posting_pastebin(test_client, init_database):
     WHEN the "/" page is posted to (POST)
     THEN check that the response is valid and pastebin is correctly created
     """
-    response = test_client.post("/", data=dict(title="test title", content="test content", paste_type="text", password=None, expire_date=None), follow_redirects=True)
+    response = test_client.post("/", data=dict(title="test title", content="test content", syntax="text", expire_date=None, password=None), follow_redirects=True)
     
     assert Pastebin.query.filter_by(id=3).first()
     assert response.status_code == 200
@@ -30,18 +29,18 @@ def test_posting_empty_pastebin(test_client, init_database):
     WHEN the "/" page is posted to (POST)
     THEN check that the response is valid and pastebin is correctly not created
     """
-    response = test_client.post("/", data=dict(title=None, content=None, paste_type=None, password=None, expire_date=None))
+    response = test_client.post("/", data=dict(title=None, content=None, syntax=None, expire_date=None, password=None))
     assert b"Your pastebin must be at least 1 character long" in response.data
     assert not Pastebin.query.filter_by(id=3).first()
     assert response.status_code == 200
 
-def test_posting_pastebin_without_paste_type(test_client, init_database):
+def test_posting_pastebin_without_syntax(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
     WHEN the "/" page is posted to (POST)
     THEN check that the response is valid and pastebin is correctly not created
     """
-    response = test_client.post("/", data=dict(title=None, content="test content", paste_type=None, password=None, expire_date=None))
+    response = test_client.post("/", data=dict(title=None, content="test content", syntax=None, password=None, expire_date=None))
     assert b"The syntax type you have choosed does not exist." in response.data
     assert not Pastebin.query.filter_by(id=3).first()
     assert response.status_code == 200
@@ -52,8 +51,8 @@ def test_pastebin_filter_by_id(init_database):
     WHEN Pastebin model is queried from DB
     THEN check that the Pastebin with given id exists already
     """
-    assert Pastebin.query.filter_by(id=1).first().is_valid()
-    assert Pastebin.query.filter_by(id=2).first().is_valid()
+    assert Pastebin.query.filter_by(id=1).first()
+    assert Pastebin.query.filter_by(id=2).first()
     assert not Pastebin.query.filter_by(id=3).first()
 
 def test_accessing_pastebin(test_client, init_database):
@@ -293,7 +292,7 @@ def test_pastebin_date_expiration(test_client, init_database):
     WHEN  the "/" page is posted (POST)
     THEN check that the date is invalid and delete it
     """
-    response = test_client.post("/", data=dict(title="test title", content="test content", paste_type="text", password=None, expire_date="test"), follow_redirects=True)
+    response = test_client.post("/", data=dict(title="test title", content="test content", syntax="text", password=None, expire_date="test"), follow_redirects=True)
     pastebin = Pastebin.query.filter_by(id=3).first()
     
     assert not pastebin
