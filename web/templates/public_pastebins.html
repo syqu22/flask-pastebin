@@ -2,48 +2,50 @@
 
 {% block content %}
 
-<div class="text-right mb-2">
-    <a href="{{ url_for('public_pastebins.public', page=pastebins.prev_num) }}"
-       class="btn btn-outline-secondary {% if pastebins.page == 1 %}disabled{% endif %}">
-        &laquo;
-    </a>
-    
-    {% for page_num in pastebins.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-        {% if page_num %}
-            {% if pastebins.page == page_num %}
-            <a href="{{ url_for('public_pastebins.public', page=page_num) }}"
-               class="btn btn-secondary ">
-                {{ page_num }}
-            </a>
-            {% else %}
-            <a href="{{ url_for('public_pastebins.public', page=page_num) }}"
-               class="btn btn-outline-secondary ">
-                {{ page_num }}
-            </a>
-            {% endif %}
-        {% else %}
-            ...
-        {% endif %}
+<div class=" mt-2 mb-3">
+    <p class="lead fs-4">Most popular tags</p>
+    {% for syntax, quant in tags %}
+    <span class="badge bg-secondary"> {{ syntax }} | {{ quant }}</span>
     {% endfor %}
-    <a href="{{ url_for('public_pastebins.public', page=pastebins.next_num) }}"
-       class="btn btn-outline-secondary 
-       {% if pastebins.page == pastebins.pages %}disabled{% endif %}">
-       &raquo;
-    </a>
 </div>
-
-
 
 {% for pastebin in pastebins.items %}
 
 <a href="{{pastebin.link}}" class="list-group-item list-group-item-action">
     <div class="d-flex w-100 justify-content-between">
-      <span class="badge bg-success">{{ pastebin.syntax }}</span>
-      <small>{{ pastebin.date.replace(microsecond=0) }}</small>
+        <span class="badge bg-success">{{ pastebin.syntax }}</span>
+        <small>{{ pastebin.date.replace(microsecond=0) }}</small>
     </div>
     <p class="mb-1"><b>{{ pastebin.title if pastebin.title|length < 10 else pastebin.title[:10] + "..."}}</b></p>
-  </a>
+</a>
 {% endfor %}
+
+<div class="text-right mt-2">
+    <a href="{{ url_for('public_pastebins.public', page=pastebins.prev_num) }}"
+        class="btn btn-outline-secondary {% if pastebins.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a>
+
+    {% for page_num in pastebins.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+    {% if page_num %}
+    {% if pastebins.page == page_num %}
+    <a href="{{ url_for('public_pastebins.public', page=page_num) }}" class="btn btn-secondary ">
+        {{ page_num }}
+    </a>
+    {% else %}
+    <a href="{{ url_for('public_pastebins.public', page=page_num) }}" class="btn btn-outline-secondary ">
+        {{ page_num }}
+    </a>
+    {% endif %}
+    {% else %}
+    ...
+    {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('public_pastebins.public', page=pastebins.next_num) }}" class="btn btn-outline-secondary 
+       {% if pastebins.page == pastebins.pages %}disabled{% endif %}">
+        &raquo;
+    </a>
+</div>
 
 
 {% endblock %}

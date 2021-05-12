@@ -109,32 +109,6 @@ def delete_pastebin(link: str):
    else:
       abort(404)
 
-#Edit pastebin (Only by pastebin owner)
-@login_required
-@bp.route("/edit/<link>", methods=["GET", "POST"])
-def edit_pastebin(link: str):
-   pastebin = Pastebin.query.filter_by(link=link).first_or_404()
-   form = CreatePastebinForm()
-
-   if request.method == "POST" and form.validate_on_submit():
-      pastebin.title = form.title.data
-      pastebin.content = form.content.data
-      pastebin.syntax = form.syntax.data
-      pastebin.set_password(form.password.data)
-      pastebin.format_expire_date(form.expire.data)
-      db.session.commit()
-      #TODO fix password, content not showing and expire data default
-
-      return redirect(url_for("pastebins.pastebin", link=pastebin.link))
-      
-   if not pastebin.is_expired():
-      if pastebin.user_id and str(pastebin.user_id) == current_user.get_id():
-         return render_template("pastebin_edit.html", user=current_user, pastebin=pastebin, form=form)
-      else:
-         abort(403)
-   else:
-      abort(404)
-
 def get_public_pastebins():
    """
    Get last 10 pastebins that are not private
