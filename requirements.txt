@@ -46,7 +46,7 @@ pyrsistent==0.15.5
 pyserial==3.4
 python-apt==2.0.0+ubuntu0.20.4.4
 python-debian===0.1.36ubuntu1
-PyYAML==5.3.1
+PyYAML==5.4
 requests==2.22.0
 requests-unixsocket==0.2.0
 SecretStorage==2.3.1
