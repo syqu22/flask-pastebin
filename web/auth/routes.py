@@ -20,6 +20,8 @@ def login():
             login_user(user, remember=True)
             flash("Logged in successfully!", category="success")
             return redirect(url_for("pastebins.home"))
+        else:
+            flash("Wrong password.", category="error")
 
     return render_template("auth/login.html", user=current_user, form=form)
 
