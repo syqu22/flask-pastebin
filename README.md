@@ -9,7 +9,7 @@ Technology I have used:
 - Flask-SQLAlchemy for Database functionality
 - Flask-Login for user authentication
 - Pytest for testing
-- Jinja2 + Boostrap 5 for Templates
+- Jinja2 + Bootstrap 5 for Templates
 
 While there are tests most of them are not working since
  I've implemented Flask-WTF and most of the data validation
@@ -75,7 +75,7 @@ thanks to Flask-Admin, where you can have access to database from the website
 
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
-| `page` | `string` | Used to paginate (one page returns maximum of 50 users)|
+| `page` | `int` | Used to paginate (one page returns maximum of 50 users)|
 
 
 #### Get pastebins of user
