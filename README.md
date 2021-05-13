@@ -11,10 +11,9 @@ Technology I have used:
 - Pytest for testing
 - Jinja2 + Bootstrap 5 for Templates
 
-While there are tests most of them are not working since
- I've implemented Flask-WTF and most of the data validation
-  goes through forms, there are only some Unit tests lefts.
+## Demo
 
+[Heroku App](https://flask-pastebin.herokuapp.com/)
 
 ## Features
 
