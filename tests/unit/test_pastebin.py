@@ -4,6 +4,33 @@ This file contains the unit tests for the pastebin model
 from web.models import Pastebin
 from datetime import datetime
 
+
+def test_pastebin_model(session):
+    """
+    GIVEN a new Pastebin model
+    WHEN a new Pastebin is created
+    THEN check the id is assigned correctly
+    """
+    pastebin = Pastebin("Test", "Test content", "html", None, None, None)
+
+    session.add(pastebin)
+    session.commit()
+
+    assert pastebin.id > 0
+
+
+def test_pastebin_model_fixture(session, new_pastebin):
+    """
+    GIVEN a Pastebin model
+    WHEN a new Pastebin is created
+    THEN check the id is assigned correctly
+    """
+    session.add(new_pastebin)
+    session.commit()
+
+    assert new_pastebin.id > 0
+
+
 def test_new_pastebin(new_pastebin):
     """
     GIVEN a Pastebin model
@@ -14,13 +41,15 @@ def test_new_pastebin(new_pastebin):
     assert new_pastebin.title == "test title"
     assert new_pastebin.syntax == "text"
 
+
 def test_new_pastebin_extended():
     """
-    GIVEN a Pastebin model
+    GIVEN a new Pastebin model
     WHEN a new Pastebin is created
     THEN check the title, content, syntax, user id and date are all correct
     """
-    pastebin = Pastebin("test title", "test content", "text", 2, datetime.utcnow(), "password")
+    pastebin = Pastebin("test title", "test content",
+                        "text", 2, datetime.utcnow(), "password")
 
     assert pastebin.content == "test content"
     assert pastebin.title == "test title"
@@ -30,7 +59,8 @@ def test_new_pastebin_extended():
     assert pastebin.check_password("password")
     assert pastebin.date == datetime.utcnow().replace(microsecond=0)
     assert not pastebin.is_expired()
-    
+
+
 def test_pastebin_setting_password(new_pastebin):
     """
     GIVEN an existing Pastebin

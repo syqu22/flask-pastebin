@@ -4,7 +4,7 @@ This file contains the functional tests for the pastebin blueprint.
 from web.models import Pastebin
 
 
-def test_home_page_with(test_client, init_database):
+def test_home_page(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
     WHEN the "/" page is requested (GET)
@@ -23,7 +23,6 @@ def test_posting_pastebin(test_client, init_database):
     response = test_client.post("/", data=dict(title="test title", content="test content",
                                 syntax="text", expire_date=None, password=None), follow_redirects=True)
 
-    assert Pastebin.query.filter_by(id=3).first()
     assert response.status_code == 200
 
 
