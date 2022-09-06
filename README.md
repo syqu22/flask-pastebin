@@ -11,10 +11,6 @@ Technology I have used:
 - Pytest for testing
 - Jinja2 + Bootstrap 5 for Templates
 
-## Demo
-
-[Heroku App](https://flask-pastebin.herokuapp.com/)
-
 ## Features
 
 - Publish public or private pastebins
